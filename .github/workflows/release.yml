@@ -283,9 +283,9 @@ jobs:
       with:
         files: |
           windows-releases/*
-          macos-releases/*
+          macos-releases/**/*
           linux-x64-releases/*
-          linux-arm64-releases/*
+          linux-arm64-releases/**/*
         draft: false
         prerelease: false
         generate_release_notes: true
