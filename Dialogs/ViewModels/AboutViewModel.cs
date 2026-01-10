@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ProxyChecker.Dialogs.Views;
 using ProxyChecker.Services;
 using System.Threading.Tasks;
 using Ursa.Controls;
@@ -22,19 +23,16 @@ public partial class AboutViewModel(UpdateService updateService) : ObservableObj
     }
 
     [RelayCommand]
-    private async Task CheckUpdateAsync()
+    private async Task OnCheckUpdateAsync()
     {
-        IsCheckingUpdate = true;
-        var updateInfo = await _updateService.CheckForUpdatesAsync();
-        IsCheckingUpdate = false;
-
-        if (updateInfo != null)
-        {
-            await MessageBox.ShowOverlayAsync("发现新版本，请前往下载。", "检查更新");
-        }
-        else
-        {
-            await MessageBox.ShowOverlayAsync("当前已是最新版本。", "检查更新");
-        }
+        var vm = new UpdateViewModel(_updateService);
+        await OverlayDialog.ShowModal<UpdateDialog, UpdateViewModel>(
+            vm,
+            options: new OverlayDialogOptions
+            {
+                Buttons = DialogButton.None,
+                Title = "软件更新",
+                CanLightDismiss = false
+            });
     }
 }
