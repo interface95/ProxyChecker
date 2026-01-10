@@ -21,6 +21,10 @@ Thumbs.db
 
 # Publish
 publish/
+test-publish/
+*.dylib
+*.dSYM/
+*.a
 
 # Local configuration
 local.settings.json
