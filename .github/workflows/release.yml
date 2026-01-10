@@ -33,19 +33,24 @@ jobs:
     - name: Build and Publish Windows ARM64 AOT
       run: dotnet publish ProxyChecker.csproj -r win-arm64 -c Release --self-contained true -p:PublishAot=true -o ./publish/win-arm64
 
+    - name: Install Velopack CLI
+      run: dotnet tool install -g vpk
+
+    - name: Pack Release
+      run: |
+        vpk pack -u ProxyChecker -v ${{ github.ref_name }} -p ./publish/win-x64 -e ProxyChecker.exe
+
     - name: Create Archives
       run: |
-        cd publish
-        7z a ../ProxyChecker-win-x64.zip ./win-x64/*
-        7z a ../ProxyChecker-win-x86.zip ./win-x86/*
-        7z a ../ProxyChecker-win-arm64.zip ./win-arm64/*
+        # Upload Velopack artifacts directly
+        7z a ../ProxyChecker-win-x64-Setup.zip ./Releases/*
 
     - name: Upload Windows Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: windows-releases
         path: |
-          *.zip
+          Releases/*
 
   build-macos:
     runs-on: macos-latest
@@ -67,62 +72,24 @@ jobs:
     - name: Build and Publish macOS ARM64 AOT
       run: dotnet publish ProxyChecker.csproj -r osx-arm64 -c Release --self-contained true -p:PublishAot=true -o ./publish/osx-arm64
 
-    - name: Create macOS App Bundles
+    - name: Install Velopack CLI
+      run: dotnet tool install -g vpk
+
+    - name: Pack Release
       run: |
-        # Create x64 app bundle
-        mkdir -p "ProxyChecker-x64.app/Contents/MacOS"
-        mkdir -p "ProxyChecker-x64.app/Contents/Resources"
-        cp -r ./publish/osx-x64/* "ProxyChecker-x64.app/Contents/MacOS/"
-
-        # Create ARM64 app bundle  
-        mkdir -p "ProxyChecker-arm64.app/Contents/MacOS"
-        mkdir -p "ProxyChecker-arm64.app/Contents/Resources"
-        cp -r ./publish/osx-arm64/* "ProxyChecker-arm64.app/Contents/MacOS/"
-
-        # Create Info.plist for both
-        cat > "ProxyChecker-x64.app/Contents/Info.plist" << 'EOF'
-        <?xml version="1.0" encoding="UTF-8"?>
-        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-        <plist version="1.0">
-        <dict>
-            <key>CFBundleExecutable</key>
-            <string>ProxyChecker</string>
-            <key>CFBundleIdentifier</key>
-            <string>com.example.ProxyChecker</string>
-            <key>CFBundleName</key>
-            <string>ProxyChecker</string>
-            <key>CFBundleVersion</key>
-            <string>1.0.0</string>
-            <key>CFBundlePackageType</key>
-            <string>APPL</string>
-        </dict>
-        </plist>
-        EOF
-
-        cp "ProxyChecker-x64.app/Contents/Info.plist" "ProxyChecker-arm64.app/Contents/Info.plist"
-
-        # Make executables executable and sign with ad-hoc signature
-        chmod +x "ProxyChecker-x64.app/Contents/MacOS/ProxyChecker"
-        chmod +x "ProxyChecker-arm64.app/Contents/MacOS/ProxyChecker"
-
-        # Remove debug symbol files
-        rm -rf "ProxyChecker-x64.app/Contents/MacOS/ProxyChecker.dSYM"
-        rm -rf "ProxyChecker-arm64.app/Contents/MacOS/ProxyChecker.dSYM"
-
-        codesign --force --deep --sign - "ProxyChecker-x64.app"
-        codesign --force --deep --sign - "ProxyChecker-arm64.app"
+        vpk pack -u ProxyChecker -v ${{ github.ref_name }} -p ./publish/osx-x64 -e ProxyChecker
 
     - name: Create Archives
       run: |
-        tar -czf ProxyChecker-osx-x64.tar.gz ProxyChecker-x64.app
-        tar -czf ProxyChecker-osx-arm64.tar.gz ProxyChecker-arm64.app
+        cd Releases
+        tar -czf ../ProxyChecker-osx-x64.tar.gz .
 
     - name: Upload macOS Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: macos-releases
         path: |
-          *.tar.gz
+          Releases/*
 
   build-linux:
     runs-on: ubuntu-latest
@@ -234,8 +201,10 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          *.zip
-          *.tar.gz
+          windows-releases/*
+          macos-releases/*
+          linux-x64-releases/*
+          linux-arm64-releases/*
         draft: false
         prerelease: false
         generate_release_notes: true

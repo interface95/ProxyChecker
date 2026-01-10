@@ -21,6 +21,7 @@ using ProxyChecker.Services;
 using Ursa.Common;
 using Ursa.Controls;
 using Ursa.Controls.Options;
+using ProxyChecker.Dialogs.ViewModels;
 
 namespace ProxyChecker.ViewModels;
 
@@ -85,15 +86,21 @@ public partial class MainViewModel : ObservableObject
     private readonly object _fileLock = new();
     private Stopwatch? _stopwatch;
     private IStorageProvider? _storageProvider;
+    private readonly UpdateService _updateService;
 
     public MainViewModel()
     {
+        _updateService = new UpdateService();
+
         // 从配置加载设置
         var setting = GlobalSetting.Instance.Setting;
         _concurrency = setting.Concurrency;
         _autoSave = setting.AutoSave;
 
         UpdateResultsSource();
+
+        // Auto-check on startup
+        _ = CheckUpdateAsync(true);
     }
 
     partial void OnConcurrencyChanged(int value)
@@ -204,6 +211,42 @@ public partial class MainViewModel : ObservableObject
     partial void OnResultsChanged(ObservableCollection<CheckResult> value) => UpdateResultsSource();
 
     // === Commands ===
+    [RelayCommand]
+    private async Task CheckUpdateAsync(bool silent = false)
+    {
+        if (!silent)
+        {
+            var vm = new UpdateViewModel(_updateService);
+            await OverlayDialog.ShowModal<UpdateDialog, UpdateViewModel>(
+                vm,
+                options: new OverlayDialogOptions
+                {
+                    Buttons = DialogButton.None,
+                    Title = "软件更新",
+                    CanLightDismiss = false
+                });
+        }
+        else
+        {
+            var info = await _updateService.CheckForUpdatesAsync();
+            if (info != null)
+            {
+                var vm = new UpdateViewModel(_updateService);
+                await OverlayDialog.ShowModal<UpdateDialog, UpdateViewModel>(
+                   vm,
+                   options: new OverlayDialogOptions
+                   {
+                       Buttons = DialogButton.None,
+                       Title = "发现新版本",
+                       CanLightDismiss = false
+                   });
+            }
+        }
+    }
+
+    [RelayCommand]
+    private Task CheckUpdateManualAsync() => CheckUpdateAsync(false);
+
     [RelayCommand]
     private async Task OpenSettingsAsync()
     {

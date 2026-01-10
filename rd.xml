@@ -3,5 +3,9 @@
   <Application>
     <!-- 主程序集 -->
     <Assembly Name="ProxyChecker" Dynamic="Required All" />
+    
+    <!-- Velopack -->
+    <Assembly Name="Velopack" Dynamic="Required All" />
+    <Assembly Name="Velopack.Avalonia" Dynamic="Required All" />
   </Application>
 </Directives>

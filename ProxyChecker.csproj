@@ -19,11 +19,15 @@
     <PackageReference Include="Irihi.Ursa.Themes.Semi" Version="1.14.1" />
     <PackageReference Include="Semi.Avalonia" Version="11.3.7.2" />
     <PackageReference Include="Semi.Avalonia.TreeDataGrid" Version="11.0.10.4" />
+    <PackageReference Include="Velopack" Version="0.0.1298" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Update="Views\MainView.axaml.cs">
       <DependentUpon>MainView.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Dialogs\Views\UpdateDialog.axaml.cs">
+      <DependentUpon>UpdateDialog.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
 

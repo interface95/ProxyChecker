@@ -94,6 +94,11 @@
 
                     <!-- 右侧: 搜索 + 过滤 -->
                     <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="15" HorizontalAlignment="Right">
+                        <Button Content="检查更新"
+                                Theme="{DynamicResource TertiaryButton}"
+                                Command="{Binding CheckUpdateManualCommand}"
+                                VerticalAlignment="Center"/>
+                                
                         <TextBox Text="{Binding SearchText}"
                                  Watermark="搜索 IP / 端口 / 用户名..."
                                  Width="200"

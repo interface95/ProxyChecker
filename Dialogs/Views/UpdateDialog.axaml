@@ -1,0 +1,71 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:ProxyChecker.Dialogs.ViewModels"
+             xmlns:u="https://irihi.tech/ursa"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="300"
+             x:Class="ProxyChecker.Dialogs.Views.UpdateDialog"
+             x:DataType="vm:UpdateViewModel">
+    <Design.DataContext>
+        <vm:UpdateViewModel />
+    </Design.DataContext>
+    <Grid RowDefinitions="Auto, *, Auto" Margin="20">
+        <!-- Header -->
+        <TextBlock Grid.Row="0" 
+                   Text="{Binding Title}" 
+                   Theme="{DynamicResource TitleTextBlock}"
+                   FontSize="18"
+                   FontWeight="Bold"
+                   Margin="0,0,0,15"/>
+
+        <!-- Content -->
+        <Border Grid.Row="1" 
+                CornerRadius="8" 
+                Background="{DynamicResource SemiColorFill0}"
+                Padding="12"
+                Margin="0,0,0,20">
+            <ScrollViewer>
+                <TextBlock Text="{Binding ReleaseNotes}" 
+                           TextWrapping="Wrap"
+                           Foreground="{DynamicResource SemiColorText1}"/>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Progress (Visible when downloading) -->
+        <StackPanel Grid.Row="1" 
+                    VerticalAlignment="Center" 
+                    Spacing="10" 
+                    IsVisible="{Binding IsDownloading}">
+             <ProgressBar Value="{Binding Progress}" 
+                          Maximum="100" 
+                          Height="6"/>
+             <TextBlock Text="{Binding Progress, StringFormat='下载中... {0:F0}%'}" 
+                        HorizontalAlignment="Center"
+                        Foreground="{DynamicResource SemiColorText2}"/>
+        </StackPanel>
+
+        <!-- Footer Actions -->
+        <Grid Grid.Row="2" ColumnDefinitions="Auto, *, Auto">
+            <Button Grid.Column="0" 
+                    Content="跳过" 
+                    Classes="Tertiary" 
+                    Theme="{DynamicResource BorderlessButton}"
+                    Command="{Binding SkipCommand}"
+                    IsVisible="{Binding IsAvailable}"/>
+
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10">
+                <Button Content="稍后" 
+                        Classes="Secondary" 
+                        Command="{Binding SkipCommand}"
+                        IsVisible="{Binding IsAvailable}"/>
+                
+                <Button Content="{Binding ActionButtonText}" 
+                        Classes="Primary" 
+                        Theme="{DynamicResource SolidButton}"
+                        Command="{Binding DoUpdateCommand}"
+                        IsEnabled="{Binding CanUpdate}"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>
