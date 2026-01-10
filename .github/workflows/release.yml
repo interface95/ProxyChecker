@@ -45,12 +45,7 @@ jobs:
 
     - name: Pack Release
       run: |
-        vpk pack -u ProxyChecker -v ${{ steps.get_version.outputs.VERSION }} -p ./publish/win-x64 -e ProxyChecker.exe
-
-    - name: Create Archives
-      run: |
-        # Upload Velopack artifacts directly
-        7z a ../ProxyChecker-win-x64-Setup.zip ./Releases/*
+        vpk pack --packId ProxyChecker --packVersion ${{ steps.get_version.outputs.VERSION }} --packDir ./publish/win-x64 --mainExe ProxyChecker.exe
 
     - name: Upload Windows Artifacts
       uses: actions/upload-artifact@v4
@@ -90,12 +85,7 @@ jobs:
 
     - name: Pack Release
       run: |
-        vpk pack -u ProxyChecker -v ${{ steps.get_version.outputs.VERSION }} -p ./publish/osx-x64 -e ProxyChecker
-
-    - name: Create Archives
-      run: |
-        cd Releases
-        tar -czf ../ProxyChecker-osx-x64.tar.gz .
+        vpk pack --packId ProxyChecker --packVersion ${{ steps.get_version.outputs.VERSION }} --packDir ./publish/osx-x64 --mainExe ProxyChecker
 
     - name: Upload macOS Artifacts
       uses: actions/upload-artifact@v4
