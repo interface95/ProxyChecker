@@ -1,13 +1,13 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
-using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Irihi.Avalonia.Shared.Contracts;
+using ProxyChecker.Dialogs.Models;
 using ProxyChecker.Services;
 using Velopack;
-using Ursa.Controls;
 
 namespace ProxyChecker.Dialogs.ViewModels;
 
@@ -15,127 +15,103 @@ public partial class UpdateViewModel : ObservableObject, IDialogContext
 {
     private readonly UpdateService _updateService;
     private UpdateInfo? _updateInfo;
+    private CancellationTokenSource? _cts;
 
-    [ObservableProperty] private string _title = "检查更新...";
-    [ObservableProperty] private string _releaseNotes = "正在获取更新信息...";
-    [ObservableProperty] private bool _isChecking = true;
-    [ObservableProperty] private bool _isAvailable = false;
-    [ObservableProperty] private bool _isDownloading = false;
-    [ObservableProperty] private double _progress = 0;
-    [ObservableProperty] private string _actionButtonText = "立即更新";
-    [ObservableProperty] private bool _canUpdate = false;
-    [ObservableProperty] private bool _isReadyToRestart = false;
+    [ObservableProperty] private DownloadStatistics _statistics = new();
 
-    // 派生属性：是否显示"稍后"按钮
-    public bool ShowLaterButton => !IsReadyToRestart;
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(StartCommand), nameof(StopCommand), nameof(RestartCommand))]
+    private DownloadStatus _status = DownloadStatus.NotStarted;
 
-    partial void OnIsReadyToRestartChanged(bool value) =>
-        OnPropertyChanged(nameof(ShowLaterButton));
+    public UpdateViewModel() : this(new UpdateService(), null) { }
 
-    // Design-time constructor
-    public UpdateViewModel() : this(new UpdateService())
-    {
-    }
-
-    public UpdateViewModel(UpdateService updateService)
+    public UpdateViewModel(UpdateService updateService, UpdateInfo? updateInfo = null)
     {
         _updateService = updateService;
-        _ = CheckUpdatesAsync();
+        _updateInfo = updateInfo;
+
+        if (_updateInfo != null)
+        {
+            Statistics.Version = _updateInfo.TargetFullRelease.Version.ToString();
+            _ = StartAsync();
+        }
+        else
+        {
+            _ = CheckUpdatesAsync();
+        }
     }
 
     private async Task CheckUpdatesAsync()
     {
-        IsChecking = true;
-        Title = "正在检查更新...";
-
+        Status = DownloadStatus.NotStarted;
         _updateInfo = await _updateService.CheckForUpdatesAsync();
-
-        IsChecking = false;
 
         if (_updateInfo != null)
         {
-            IsAvailable = true;
-            CanUpdate = true;
-            Title = $"发现新版本 v{_updateInfo.TargetFullRelease.Version}";
-            // Explicitly convert HTML to Markdown or just display as is if supported, 
-            // Velopack usually provides markdown or HTML. For now assuming simple text/markdown.
-            // _updateInfo.TargetFullRelease.Notes usually empty for GitHub source if not parsed, 
-            // but we can try to use Name or Body if available. 
-            // Velopack's UpdateInfo might not have Body directly populated from GitHub API in all versions 
-            // without custom extension, but let's assume it works or generic text.
-            ReleaseNotes = "新版本已发布，建议立即更新以获得最佳体验。";
+            Statistics.Version = _updateInfo.TargetFullRelease.Version.ToString();
+            // Auto start download if update is found, as we are in the UpdateDialog
+            await StartAsync();
         }
         else
         {
-            Title = "当前已是最新版本";
-            ReleaseNotes = "暂无可用更新。";
-            CanUpdate = false;
-            ActionButtonText = "关闭";
+            // No update found, close dialog
+            Close();
         }
     }
 
-    [RelayCommand]
-    private async Task DoUpdateAsync()
+    public bool CanStart => Status is DownloadStatus.NotStarted or DownloadStatus.Paused or DownloadStatus.Failed;
+
+    [RelayCommand(CanExecute = nameof(CanStart))]
+    private async Task StartAsync()
     {
-        if (IsReadyToRestart)
-        {
-            _updateService.ApplyUpdatesAndRestart();
-            return;
-        }
+        if (_updateInfo == null) return;
 
-        if (!IsAvailable)
-        {
-            // Close dialog
-            Close();
-            return;
-        }
-
-        IsDownloading = true;
-        CanUpdate = false;
-        Title = "正在下载更新...";
+        Status = DownloadStatus.Downloading;
+        _cts = new CancellationTokenSource();
 
         try
         {
-            await _updateService.DownloadUpdatesAsync(progress => { Progress = progress; });
+            await _updateService.DownloadUpdatesAsync(progress =>
+            {
+                Statistics.ProgressPercentage = progress;
+            }, _cts.Token);
 
-            IsDownloading = false;
-            IsReadyToRestart = true;
-            Title = "更新准备就绪";
-            ActionButtonText = "立即重启";
-            ReleaseNotes = "更新已下载完成，请重启软件以应用更改。";
-            CanUpdate = true;
+            Status = DownloadStatus.Completed;
         }
-        catch (Exception ex)
+        catch (OperationCanceledException)
         {
-            IsDownloading = false;
-            IsAvailable = true;
-            CanUpdate = true;
-            Title = "下载失败";
-            ReleaseNotes = $"下载更新时出错：{ex.Message}";
+            Status = DownloadStatus.Paused;
         }
+        catch (Exception)
+        {
+            Status = DownloadStatus.Failed;
+        }
+    }
+
+    public bool CanStop => Status is DownloadStatus.Downloading;
+
+    [RelayCommand(CanExecute = nameof(CanStop))]
+    private void Stop()
+    {
+        _cts?.Cancel();
     }
 
     [RelayCommand]
-    private void Skip()
+    private async Task RestartAsync()
     {
-        if (IsReadyToRestart)
-        {
-            // 下载完成后点击"稍后"，退出应用以便下次启动使用新版本
-            App.SkipExitConfirmation = true;
-            if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            {
-                desktop.Shutdown();
-            }
-        }
-        else
-        {
-            Close();
-        }
+        await StartAsync();
     }
 
+    [RelayCommand]
     public void Close()
     {
         RequestClose?.Invoke(this, true);
+    }
+
+    [RelayCommand]
+    private void ApplyAndRestart()
+    {
+        _updateService.ApplyUpdatesAndRestart();
     }
 
     public event EventHandler<object?>? RequestClose;

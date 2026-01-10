@@ -25,14 +25,25 @@ public partial class AboutViewModel(UpdateService updateService) : ObservableObj
     [RelayCommand]
     private async Task OnCheckUpdateAsync()
     {
-        var vm = new UpdateViewModel(_updateService);
-        await OverlayDialog.ShowModal<UpdateDialog, UpdateViewModel>(
-            vm,
-            options: new OverlayDialogOptions
-            {
-                Buttons = DialogButton.None,
-                Title = "软件更新",
-                CanLightDismiss = false
-            });
+        IsCheckingUpdate = true;
+        var updateInfo = await _updateService.CheckForUpdatesAsync();
+        IsCheckingUpdate = false;
+
+        if (updateInfo != null)
+        {
+            var vm = new UpdateViewModel(_updateService, updateInfo);
+            await OverlayDialog.ShowModal<UpdateDialog, UpdateViewModel>(
+                vm,
+                options: new OverlayDialogOptions
+                {
+                    Buttons = DialogButton.None,
+                    Title = "软件更新",
+                    CanLightDismiss = false
+                });
+        }
+        else
+        {
+            await MessageBox.ShowOverlayAsync("当前已是最新版本。", "检查更新");
+        }
     }
 }

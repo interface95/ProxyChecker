@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Velopack;
 using Velopack.Sources;
@@ -36,14 +37,14 @@ public class UpdateService
         }
     }
 
-    public async Task DownloadUpdatesAsync(Action<int> progress)
+    public async Task DownloadUpdatesAsync(Action<int> progress, CancellationToken cancellationToken = default)
     {
         if (_updateManager == null || _updateInfo == null)
             throw new InvalidOperationException("UpdateManager or UpdateInfo is not initialized. Please check for updates first.");
 
         try
         {
-            await _updateManager.DownloadUpdatesAsync(_updateInfo, progress);
+            await _updateManager.DownloadUpdatesAsync(_updateInfo, progress, cancelToken: cancellationToken);
         }
         catch (Exception ex)
         {

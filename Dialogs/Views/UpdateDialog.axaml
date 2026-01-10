@@ -2,83 +2,155 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:vm="using:ProxyChecker.Dialogs.ViewModels"
+             xmlns:vm="clr-namespace:ProxyChecker.Dialogs.ViewModels"
+             xmlns:models="clr-namespace:ProxyChecker.Dialogs.Models"
+             xmlns:converters="clr-namespace:ProxyChecker.Converters"
              xmlns:u="https://irihi.tech/ursa"
-             mc:Ignorable="d" d:DesignWidth="420" d:DesignHeight="280"
+             mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
              x:Class="ProxyChecker.Dialogs.Views.UpdateDialog"
              x:DataType="vm:UpdateViewModel">
-    <Design.DataContext>
-        <vm:UpdateViewModel />
-    </Design.DataContext>
 
-    <Panel>
-        <!-- 有更新时的界面 -->
-        <Grid RowDefinitions="Auto, *, Auto" Margin="24" IsVisible="{Binding IsAvailable}">
-            <!-- Header -->
-            <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,16">
-                <TextBlock Text="🚀 发现新版本" FontSize="20" FontWeight="Bold"/>
-                <TextBlock Text="{Binding Title}" Foreground="{DynamicResource SemiColorText2}"/>
-            </StackPanel>
+    <UserControl.Resources>
+        <converters:EnumToBoolConverter x:Key="EnumToBooleanConverter" />
+    </UserControl.Resources>
 
-            <!-- Content / Progress (同一区域切换显示) -->
-            <Grid Grid.Row="1">
-                <!-- Release Notes (未下载时显示) -->
-                <Border CornerRadius="8"
-                        Background="{DynamicResource SemiColorFill0}"
-                        Padding="16"
-                        IsVisible="{Binding !IsDownloading}">
-                    <TextBlock Text="{Binding ReleaseNotes}"
-                               TextWrapping="Wrap"
-                               Foreground="{DynamicResource SemiColorText1}"/>
-                </Border>
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="20" MinWidth="500">
+        <!-- Progress Circle and Avatar -->
+        <Panel>
+            <ProgressBar
+                Name="Bar"
+                Theme="{DynamicResource ProgressRing}"
+                Width="180"
+                Height="180"
+                Classes.Success="{Binding Status,
+                                  Converter={StaticResource EnumToBooleanConverter},
+                                  ConverterParameter={x:Static models:DownloadStatus.Completed},
+                                  Mode=OneWay}"
+                Value="{Binding Statistics.ProgressPercentage}">
+                <ProgressBar.Styles>
+                    <Style Selector="ProgressBar">
+                        <Setter Property="Transitions">
+                            <Transitions>
+                                <DoubleTransition Easing="CubicEaseInOut" Property="Value" Duration="0:0:0.3" />
+                                <BrushTransition Property="Foreground" Duration="0:0:0.3" />
+                            </Transitions>
+                        </Setter>
+                    </Style>
+                </ProgressBar.Styles>
+            </ProgressBar>
 
-                <!-- Progress (下载时显示) -->
-                <StackPanel VerticalAlignment="Center"
-                            Spacing="10"
-                            IsVisible="{Binding IsDownloading}">
-                    <ProgressBar Value="{Binding Progress}" Maximum="100" Height="6"/>
-                    <TextBlock Text="{Binding Progress, StringFormat='下载中... {0:F0}%'}"
-                               HorizontalAlignment="Center"
-                               Foreground="{DynamicResource SemiColorText2}"/>
-                </StackPanel>
-            </Grid>
+            <u:Avatar
+                Width="130"
+                Height="130"
+                Opacity="{Binding Statistics.ProgressPercentage,
+                          Converter={x:Static converters:ProgressConverter.ProgressToOpacityConverter}}"
+                Classes="Circle"
+                Content="PC"
+                FontSize="48">
+                 <u:Avatar.Styles>
+                    <Style Selector="Image">
+                        <Setter Property="Transitions">
+                            <Transitions>
+                                <DoubleTransition Easing="CubicEaseInOut" Property="Opacity" Duration="0:0:0.3" />
+                            </Transitions>
+                        </Setter>
+                    </Style>
+                </u:Avatar.Styles>
+            </u:Avatar>
+        </Panel>
 
-            <!-- Buttons -->
-            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
-                <Button Content="稍后"
-                        Classes="Secondary"
-                        Command="{Binding SkipCommand}"
-                        IsVisible="{Binding ShowLaterButton}"/>
+        <!-- Title -->
+        <SelectableTextBlock
+            HorizontalAlignment="Center"
+            FontSize="20"
+            FontWeight="Bold">
+            <Run Text="ProxyChecker" />
+            <Run Text="{Binding Statistics.Version}" />
+            <Run Text="版本更新" />
+        </SelectableTextBlock>
 
-                <Button Content="{Binding ActionButtonText}"
-                        Classes="Primary"
-                        Command="{Binding DoUpdateCommand}"
-                        IsEnabled="{Binding CanUpdate}"
-                        MinWidth="100"/>
-            </StackPanel>
-        </Grid>
+        <!-- Status Text -->
+        <Panel>
+            <SelectableTextBlock
+                HorizontalAlignment="Center"
+                IsVisible="{Binding Status,
+                            Converter={StaticResource EnumToBooleanConverter},
+                            ConverterParameter={x:Static models:DownloadStatus.Downloading},
+                            Mode=OneWay}"
+                Text="{Binding Statistics.ProgressPercentage, StringFormat='正在下载... {0:F0}%'}" />
 
-        <!-- 无更新时的界面 -->
-        <Grid RowDefinitions="*, Auto, Auto" Margin="24" IsVisible="{Binding !IsAvailable}">
-            <StackPanel Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="12">
-                <TextBlock Text="✓" FontSize="48" HorizontalAlignment="Center"/>
-                <TextBlock Text="{Binding Title}"
-                           FontSize="18"
-                           FontWeight="Bold"
-                           HorizontalAlignment="Center"/>
-                <TextBlock Text="{Binding ReleaseNotes}"
-                           Foreground="{DynamicResource SemiColorText2}"
-                           HorizontalAlignment="Center"
-                           Margin="0,8,0,0"/>
-            </StackPanel>
+            <SelectableTextBlock
+                HorizontalAlignment="Center"
+                IsVisible="{Binding Status,
+                            Converter={StaticResource EnumToBooleanConverter},
+                            ConverterParameter={x:Static models:DownloadStatus.Completed},
+                            Mode=OneWay}"
+                Text="下载完成" />
 
-            <Button Grid.Row="1"
+             <SelectableTextBlock
+                HorizontalAlignment="Center"
+                IsVisible="{Binding Status,
+                            Converter={StaticResource EnumToBooleanConverter},
+                            ConverterParameter={x:Static models:DownloadStatus.Failed},
+                            Mode=OneWay}"
+                Text="下载失败" Foreground="Red" />
+        </Panel>
+
+        <!-- Controls -->
+        <Border
+            Padding="10"
+            Background="{DynamicResource SemiBackground0Color}"
+            Theme="{StaticResource CardBorder}"
+            HorizontalAlignment="Center"
+            CornerRadius="8">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+
+                <!-- Stop / Cancel -->
+                <u:IconButton
+                    Name="StopButton"
+                    Theme="{StaticResource BorderlessIconButton}"
+                    Classes="Danger"
+                    ToolTip.Tip="取消"
+                    Icon="{StaticResource SemiIconStop}"
+                    Command="{Binding StopCommand}"
+                    IsVisible="{Binding Status,
+                                Converter={StaticResource EnumToBooleanConverter},
+                                ConverterParameter={x:Static models:DownloadStatus.Downloading},
+                                Mode=OneWay}" />
+
+                <!-- Restart / Retry -->
+                <u:IconButton
+                    Name="RestartButton"
+                    Theme="{StaticResource BorderlessIconButton}"
+                    Classes="Tertiary"
+                    ToolTip.Tip="重试"
+                    Icon="{StaticResource SemiIconRefresh}"
+                    Command="{Binding RestartCommand}"
+                    IsVisible="{Binding Status,
+                                Converter={StaticResource EnumToBooleanConverter},
+                                ConverterParameter={x:Static models:DownloadStatus.Failed},
+                                Mode=OneWay}"/>
+
+                <!-- Apply and Restart App -->
+                <Button
+                    Content="立即重启"
+                    Classes="Primary"
+                    Command="{Binding ApplyAndRestartCommand}"
+                    IsVisible="{Binding Status,
+                                Converter={StaticResource EnumToBooleanConverter},
+                                ConverterParameter={x:Static models:DownloadStatus.Completed},
+                                Mode=OneWay}" />
+
+                <!-- Close (if failed or not started) -->
+                <Button
                     Content="关闭"
                     Classes="Secondary"
-                    Command="{Binding SkipCommand}"
-                    HorizontalAlignment="Center"
-                    MinWidth="100"
-                    Margin="0,16,0,0"/>
-        </Grid>
-    </Panel>
+                    Command="{Binding CloseCommand}"
+                    IsVisible="{Binding Status,
+                                Converter={StaticResource EnumToBooleanConverter},
+                                ConverterParameter={x:Static models:DownloadStatus.Failed},
+                                Mode=OneWay}" />
+            </StackPanel>
+        </Border>
+    </StackPanel>
 </UserControl>
