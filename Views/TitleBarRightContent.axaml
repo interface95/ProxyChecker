@@ -10,6 +10,12 @@
     <StackPanel Orientation="Horizontal" Spacing="8">
         <u:IconButton Theme="{StaticResource BorderlessIconButton}"
                       Classes="Tertiary"
+                      Icon="{StaticResource SemiIconInfoCircle}"
+                      Command="{Binding $parent[u:UrsaWindow].((vm:MainViewModel)DataContext).ShowAboutCommand}"
+                      ToolTip.Tip="关于">
+        </u:IconButton>
+        <u:IconButton Theme="{StaticResource BorderlessIconButton}"
+                      Classes="Tertiary"
                       Icon="{StaticResource SemiIconSetting}"
                       Command="{Binding $parent[u:UrsaWindow].((vm:MainViewModel)DataContext).OpenSettingsCommand}"
                       ToolTip.Tip="设置">

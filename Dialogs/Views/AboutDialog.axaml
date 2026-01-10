@@ -1,0 +1,44 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:ProxyChecker.Dialogs.ViewModels"
+             xmlns:u="https://irihi.tech/ursa"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="300"
+             x:Class="ProxyChecker.Dialogs.Views.AboutDialog"
+             x:DataType="vm:AboutViewModel">
+             
+    <Grid RowDefinitions="Auto, *, Auto" Margin="24">
+        <!-- Logo / Title Area -->
+        <StackPanel Grid.Row="0" HorizontalAlignment="Center" Spacing="10" Margin="0,0,0,20">
+            <!-- Placeholder for Icon if we had one, use Text for now -->
+            <TextBlock Text="ProxyChecker" 
+                       Theme="{DynamicResource TitleTextBlock}" 
+                       FontSize="24" 
+                       HorizontalAlignment="Center"/>
+            <TextBlock Text="{Binding AppVersion}" 
+                       Foreground="{DynamicResource SemiColorText2}" 
+                       HorizontalAlignment="Center"/>
+        </StackPanel>
+
+        <!-- Description Area -->
+        <Border Grid.Row="1" 
+                Background="{DynamicResource SemiColorFill0}" 
+                CornerRadius="8" 
+                Padding="16" 
+                Margin="0,0,0,20">
+            <TextBlock Text="{Binding Description}" 
+                       TextWrapping="Wrap" 
+                       Foreground="{DynamicResource SemiColorText1}"
+                       LineHeight="24"/>
+        </Border>
+
+        <!-- Footer / Action Area -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="20">
+            <Button Content="检查更新" 
+                    Classes="Primary"
+                    Theme="{DynamicResource SolidButton}"
+                    Command="{Binding CheckUpdateCommand}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

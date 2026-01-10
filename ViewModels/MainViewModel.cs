@@ -248,6 +248,20 @@ public partial class MainViewModel : ObservableObject
     private Task CheckUpdateManualAsync() => CheckUpdateAsync(false);
 
     [RelayCommand]
+    private async Task ShowAboutAsync()
+    {
+        var vm = new AboutViewModel(_updateService);
+        await OverlayDialog.ShowModal<ProxyChecker.Dialogs.Views.AboutDialog, AboutViewModel>(
+            vm,
+            options: new OverlayDialogOptions
+            {
+                Buttons = DialogButton.OK,
+                Title = "关于",
+                CanLightDismiss = true
+            });
+    }
+
+    [RelayCommand]
     private async Task OpenSettingsAsync()
     {
         var options = new DrawerOptions

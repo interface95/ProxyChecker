@@ -57,6 +57,40 @@
     dotnet publish -r win-x64 -c Release -p:PublishAot=true
     ```
 
+## 📦 版本管理
+
+本项目使用 [Nerdbank.GitVersioning](https://github.com/dotnet/Nerdbank.GitVersioning) 进行版本管理。
+
+### 版本号规则
+
+| Git 状态 | 版本格式 | 说明 |
+|----------|----------|------|
+| 无 tag（开发中） | `v1.0.0-preview.20` | 预览版本，包含 commit 计数 |
+| 有 tag `v1.0.0` | `v1.0.0` | 正式发布版本 |
+
+### 发布新版本
+
+发布新版本需要创建并推送 Git tag：
+
+```bash
+# 1. 更新代码并提交
+git add .
+git commit -m "Release v1.0.1"
+
+# 2. 创建 tag
+git tag v1.0.1
+
+# 3. 推送 tag（触发 GitHub Actions 自动构建）
+git push origin main
+git push origin v1.0.1
+```
+
+推送 tag 后，GitHub Actions 会自动：
+- 构建 Windows / macOS / Linux (x64/ARM64) 平台
+- 进行 Native AOT 编译
+- 打包 Velopack 安装包
+- 创建 GitHub Release
+
 ## 📝 许可证
 
 本项目采用 [MIT 许可证](LICENSE)。

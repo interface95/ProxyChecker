@@ -17,6 +17,9 @@
     </PackageReference>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="Irihi.Ursa.Themes.Semi" Version="1.14.1" />
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.6.133">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Semi.Avalonia" Version="11.3.7.2" />
     <PackageReference Include="Semi.Avalonia.TreeDataGrid" Version="11.0.10.4" />
     <PackageReference Include="Velopack" Version="0.0.1298" />
@@ -24,5 +27,11 @@
 
   <ItemGroup>
     <RdXmlFile Include="rd.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Dialogs\Views\AboutDialog.axaml.cs">
+      <DependentUpon>AboutDialog.axaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>

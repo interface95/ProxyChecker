@@ -15,8 +15,8 @@ public class UpdateService
 
     public async Task InitializeAsync()
     {
-        // Explicitly use GithubSource
-        var source = new GithubSource(RepoUrl, null, false);
+        // Explicitly use GithubSource, allow prerelease versions
+        var source = new GithubSource(RepoUrl, null, true);
         _updateManager = new UpdateManager(source);
     }
 

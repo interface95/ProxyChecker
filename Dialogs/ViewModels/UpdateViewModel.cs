@@ -23,7 +23,7 @@ public partial class UpdateViewModel : ObservableObject
     [ObservableProperty] private bool _canUpdate = false;
     [ObservableProperty] private bool _isReadyToRestart = false;
 
-    #if DEBUG
+    #if !DEBUG
     
     public UpdateViewModel()
     {
