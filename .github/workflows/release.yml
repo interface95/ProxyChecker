@@ -99,7 +99,12 @@ jobs:
         mkdir -p ./publish/osx-x64/ProxyChecker.app/Contents/MacOS
         mkdir -p ./publish/osx-x64/ProxyChecker.app/Contents/Resources
         cp ./publish/osx-x64/ProxyChecker ./publish/osx-x64/ProxyChecker.app/Contents/MacOS/
-        cp ./publish/osx-x64/*.dylib ./publish/osx-x64/ProxyChecker.app/Contents/MacOS/ 2>/dev/null || :
+        # Copy all dylib files from publish root
+        find ./publish/osx-x64 -maxdepth 1 -name "*.dylib" -exec cp {} ./publish/osx-x64/ProxyChecker.app/Contents/MacOS/ \;
+        # Ensure runtimes native libs are included
+        if [ -d "./publish/osx-x64/runtimes/osx/native" ]; then
+          cp ./publish/osx-x64/runtimes/osx/native/*.dylib ./publish/osx-x64/ProxyChecker.app/Contents/MacOS/ 2>/dev/null || true
+        fi
         cat > ./publish/osx-x64/ProxyChecker.app/Contents/Info.plist <<EOF
         <?xml version="1.0" encoding="UTF-8"?>
         <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -126,7 +131,12 @@ jobs:
         mkdir -p ./publish/osx-arm64/ProxyChecker.app/Contents/MacOS
         mkdir -p ./publish/osx-arm64/ProxyChecker.app/Contents/Resources
         cp ./publish/osx-arm64/ProxyChecker ./publish/osx-arm64/ProxyChecker.app/Contents/MacOS/
-        cp ./publish/osx-arm64/*.dylib ./publish/osx-arm64/ProxyChecker.app/Contents/MacOS/ 2>/dev/null || :
+        # Copy all dylib files from publish root
+        find ./publish/osx-arm64 -maxdepth 1 -name "*.dylib" -exec cp {} ./publish/osx-arm64/ProxyChecker.app/Contents/MacOS/ \;
+        # Ensure runtimes native libs are included
+        if [ -d "./publish/osx-arm64/runtimes/osx/native" ]; then
+          cp ./publish/osx-arm64/runtimes/osx/native/*.dylib ./publish/osx-arm64/ProxyChecker.app/Contents/MacOS/ 2>/dev/null || true
+        fi
         cat > ./publish/osx-arm64/ProxyChecker.app/Contents/Info.plist <<EOF
         <?xml version="1.0" encoding="UTF-8"?>
         <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
