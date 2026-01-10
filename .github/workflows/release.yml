@@ -85,31 +85,8 @@ jobs:
 
     - name: Create .app Bundle
       run: |
-        mkdir -p ./publish/osx-x64/ProxyChecker.app/Contents/MacOS
-        mkdir -p ./publish/osx-x64/ProxyChecker.app/Contents/Resources
-        cp ./publish/osx-x64/ProxyChecker ./publish/osx-x64/ProxyChecker.app/Contents/MacOS/
-        cp ./publish/osx-x64/*.dylib ./publish/osx-x64/ProxyChecker.app/Contents/MacOS/ 2>/dev/null || :
-        # Create a basic Info.plist
-        cat > ./publish/osx-x64/ProxyChecker.app/Contents/Info.plist <<EOF
-        <?xml version="1.0" encoding="UTF-8"?>
-        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-        <plist version="1.0">
-        <dict>
-            <key>CFBundleExecutable</key>
-            <string>ProxyChecker</string>
-            <key>CFBundleIdentifier</key>
-            <string>com.interface95.proxychecker</string>
-            <key>CFBundleName</key>
-            <string>ProxyChecker</string>
-            <key>CFBundleVersion</key>
-            <string>${{ steps.get_version.outputs.VERSION }}</string>
-            <key>CFBundleShortVersionString</key>
-            <string>${{ steps.get_version.outputs.VERSION }}</string>
-            <key>LSMinimumSystemVersion</key>
-            <string>10.13</string>
-        </dict>
-        </plist>
-        EOF
+        chmod +x ./scripts/bundle_macos.sh
+        ./scripts/bundle_macos.sh ./publish/osx-x64 ${{ steps.get_version.outputs.VERSION }}
 
     - name: Pack Release
       run: |
