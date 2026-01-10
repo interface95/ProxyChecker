@@ -30,14 +30,7 @@ public partial class AboutViewModel(UpdateService updateService) : ObservableObj
 
         if (updateInfo != null)
         {
-            var vm = new UpdateViewModel(_updateService);
-            await OverlayDialog.ShowModal<ProxyChecker.Dialogs.Views.UpdateDialog, UpdateViewModel>(
-               vm,
-               options: new OverlayDialogOptions
-               {
-                   Title = "发现新版本",
-                   CanLightDismiss = false
-               });
+            await MessageBox.ShowOverlayAsync("发现新版本，请前往下载。", "检查更新");
         }
         else
         {
