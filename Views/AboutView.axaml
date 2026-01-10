@@ -101,7 +101,7 @@
                           Command="{Binding AboutViewModel.CheckUpdateCommand}"
                           IsLoading="{Binding AboutViewModel.IsCheckingUpdate}"
                           HorizontalAlignment="Center"
-                          Margin="0,0,0,40"
+                          Margin="0,40,0,40"
                           MinWidth="120"
                           Height="36"/>
         </Grid>
