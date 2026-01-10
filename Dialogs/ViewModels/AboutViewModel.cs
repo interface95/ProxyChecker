@@ -13,6 +13,7 @@ public partial class AboutViewModel(UpdateService updateService) : ObservableObj
     [ObservableProperty] private string _appVersion = VersionInfo.GetDisplayVersion();
     [ObservableProperty] private string _description =
         "ProxyChecker 是一个高性能的代理检测工具，支持多协议检测、地理位置识别及并发验证。\n\n基于 Avalonia UI 与 Native AOT 技术构建，旨在提供跨平台、极致流畅的用户体验。";
+    [ObservableProperty] private bool _isCheckingUpdate;
 
     // Design-time constructor
     public AboutViewModel() : this(new UpdateService())
@@ -23,7 +24,9 @@ public partial class AboutViewModel(UpdateService updateService) : ObservableObj
     [RelayCommand]
     private async Task CheckUpdateAsync()
     {
+        IsCheckingUpdate = true;
         var updateInfo = await _updateService.CheckForUpdatesAsync();
+        IsCheckingUpdate = false;
 
         if (updateInfo != null)
         {

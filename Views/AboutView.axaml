@@ -95,14 +95,15 @@
             </Grid>
 
             <!-- Footer / Action Area -->
-            <Button Grid.Row="2"
-                    Content="检查更新"
-                    Classes="Primary"
-                    Command="{Binding AboutViewModel.CheckUpdateCommand}"
-                    HorizontalAlignment="Center"
-                    Margin="0,0,0,40"
-                    MinWidth="120"
-                    Height="36"/>
+            <u:IconButton Grid.Row="2"
+                          Content="检查更新"
+                          Classes="Primary"
+                          Command="{Binding AboutViewModel.CheckUpdateCommand}"
+                          IsLoading="{Binding AboutViewModel.IsCheckingUpdate}"
+                          HorizontalAlignment="Center"
+                          Margin="0,0,0,40"
+                          MinWidth="120"
+                          Height="36"/>
         </Grid>
     </Panel>
 </UserControl>
