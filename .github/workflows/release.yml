@@ -45,7 +45,7 @@ jobs:
 
     - name: Pack Release
       run: |
-        vpk pack --packId ProxyChecker --packVersion ${{ steps.get_version.outputs.VERSION }} --packDir ./publish/win-x64 --mainExe ProxyChecker.exe
+        vpk pack -u ProxyChecker -v ${{ steps.get_version.outputs.VERSION }} -p ./publish/win-x64 -e ProxyChecker.exe
 
     - name: Upload Windows Artifacts
       uses: actions/upload-artifact@v4
@@ -83,16 +83,46 @@ jobs:
         VERSION=${GITHUB_REF_NAME#v}
         echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
+    - name: Create .app Bundle
+      run: |
+        mkdir -p ./publish/osx-x64/ProxyChecker.app/Contents/MacOS
+        mkdir -p ./publish/osx-x64/ProxyChecker.app/Contents/Resources
+        cp ./publish/osx-x64/ProxyChecker ./publish/osx-x64/ProxyChecker.app/Contents/MacOS/
+        cp ./publish/osx-x64/*.dylib ./publish/osx-x64/ProxyChecker.app/Contents/MacOS/ 2>/dev/null || :
+        # Create a basic Info.plist
+        cat > ./publish/osx-x64/ProxyChecker.app/Contents/Info.plist <<EOF
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+            <key>CFBundleExecutable</key>
+            <string>ProxyChecker</string>
+            <key>CFBundleIdentifier</key>
+            <string>com.interface95.proxychecker</string>
+            <key>CFBundleName</key>
+            <string>ProxyChecker</string>
+            <key>CFBundleVersion</key>
+            <string>${{ steps.get_version.outputs.VERSION }}</string>
+            <key>CFBundleShortVersionString</key>
+            <string>${{ steps.get_version.outputs.VERSION }}</string>
+            <key>LSMinimumSystemVersion</key>
+            <string>10.13</string>
+        </dict>
+        </plist>
+        EOF
+
     - name: Pack Release
       run: |
-        vpk pack --packId ProxyChecker --packVersion ${{ steps.get_version.outputs.VERSION }} --packDir ./publish/osx-x64 --mainExe ProxyChecker
+        vpk pack -u ProxyChecker -v ${{ steps.get_version.outputs.VERSION }} -p ./publish/osx-x64/ProxyChecker.app -e ProxyChecker
 
     - name: Upload macOS Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: macos-releases
         path: |
-          Releases/*
+          Releases/*.pkg
+          Releases/*.nupkg
+          Releases/*.dmg
 
   build-linux:
     runs-on: ubuntu-latest
