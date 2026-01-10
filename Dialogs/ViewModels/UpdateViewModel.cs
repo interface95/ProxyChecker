@@ -2,13 +2,14 @@ using System;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Irihi.Avalonia.Shared.Contracts;
 using ProxyChecker.Services;
 using Velopack;
 using Ursa.Controls;
 
 namespace ProxyChecker.Dialogs.ViewModels;
 
-public partial class UpdateViewModel : ObservableObject
+public partial class UpdateViewModel : ObservableObject, IDialogContext
 {
     private readonly UpdateService _updateService;
     private UpdateInfo? _updateInfo;
@@ -29,15 +30,14 @@ public partial class UpdateViewModel : ObservableObject
     partial void OnIsReadyToRestartChanged(bool value) =>
         OnPropertyChanged(nameof(ShowLaterButton));
 
-    #if !DEBUG
-    
+#if !DEBUG
     public UpdateViewModel()
     {
         
     }
-    
+
 #endif
-    
+
     public UpdateViewModel(UpdateService updateService)
     {
         _updateService = updateService;
@@ -94,10 +94,7 @@ public partial class UpdateViewModel : ObservableObject
         IsAvailable = false; // Hide buttons temporarily or change state
         Title = "正在下载更新...";
 
-        await _updateService.DownloadUpdatesAsync(progress =>
-        {
-            Progress = progress;
-        });
+        await _updateService.DownloadUpdatesAsync(progress => { Progress = progress; });
 
         IsDownloading = false;
         IsReadyToRestart = true;
@@ -110,6 +107,13 @@ public partial class UpdateViewModel : ObservableObject
     [RelayCommand]
     private void Skip()
     {
-        // Close dialog logic (bound to view)
+        Close();
     }
+
+    public void Close()
+    {
+        RequestClose?.Invoke(this, true);
+    }
+
+    public event EventHandler<object?>? RequestClose;
 }

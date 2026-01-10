@@ -255,6 +255,7 @@ public partial class MainViewModel : ObservableObject
                    options: new OverlayDialogOptions
                    {
                        Buttons = DialogButton.None,
+                       IsCloseButtonVisible = false,
                        Title = "发现新版本",
                        CanLightDismiss = false
                    });
