@@ -3,5 +3,8 @@
   <Application>
     <!-- 主程序集 -->
     <Assembly Name="ProxyChecker" Dynamic="Required All" />
+
+    <!-- Velopack (自动更新) -->
+    <Assembly Name="Velopack" Dynamic="Required All" />
   </Application>
 </Directives>
