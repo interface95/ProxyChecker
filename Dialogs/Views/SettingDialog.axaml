@@ -1,0 +1,112 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:models="clr-namespace:ProxyChecker.Dialogs.Models"
+             xmlns:u="https://irihi.tech/ursa"
+             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="400"
+             x:Class="ProxyChecker.Dialogs.Views.SettingDialog"
+             x:DataType="models:SettingModel"
+             MinWidth="280">
+    <Design.DataContext>
+        <models:SettingModel />
+    </Design.DataContext>
+
+    <ScrollViewer>
+        <StackPanel Orientation="Vertical"
+                    Spacing="10"
+                    Margin="0,20,0,0">
+            <u:Divider Content="代理设置" />
+            <u:Form LabelWidth="*"
+                    LabelPosition="Left">
+                <ComboBox SelectedIndex="{Binding ProxyType}"
+                          Width="100"
+                          HorizontalAlignment="Left"
+                          u:FormItem.Label="代理类型">
+                    <ComboBoxItem Content="HTTP" />
+                    <ComboBoxItem Content="SOCKS4" />
+                    <ComboBoxItem Content="SOCKS5" />
+                </ComboBox>
+
+                <u:NumericIntUpDown Width="100"
+                                    Minimum="1"
+                                    Maximum="200"
+                                    HorizontalAlignment="Left"
+                                    HorizontalContentAlignment="Center"
+                                    Value="{Binding Concurrency}"
+                                    u:FormItem.Label="线程数"
+                                    ToolTip.Tip="同时检测的代理数量" />
+
+                <u:NumericIntUpDown Width="100"
+                                    Minimum="5"
+                                    Maximum="60"
+                                    HorizontalAlignment="Left"
+                                    HorizontalContentAlignment="Center"
+                                    Value="{Binding Timeout}"
+                                    u:FormItem.Label="连接超时(秒)"
+                                    ToolTip.Tip="代理连接超时时间" />
+
+                <CheckBox IsChecked="{Binding AutoSave}"
+                          u:FormItem.Label="自动保存"
+                          ToolTip.Tip="检测完成后自动保存结果到文件" />
+            </u:Form>
+
+            <u:Divider Content="导入设置" />
+            <u:Form LabelWidth="*"
+                    LabelPosition="Left">
+                <TextBox Text="{Binding Separator}"
+                         Width="100"
+                         HorizontalAlignment="Left"
+                         u:FormItem.Label="分隔符"
+                         ToolTip.Tip="用于分隔 IP、端口、用户名、密码的字符" />
+
+                <u:NumericIntUpDown Width="100"
+                                    Minimum="0"
+                                    Maximum="10"
+                                    HorizontalAlignment="Left"
+                                    HorizontalContentAlignment="Center"
+                                    Value="{Binding IpIndex}"
+                                    u:FormItem.Label="IP位置"
+                                    ToolTip.Tip="IP 在分隔后的索引位置 (从0开始)" />
+
+                <u:NumericIntUpDown Width="100"
+                                    Minimum="0"
+                                    Maximum="10"
+                                    HorizontalAlignment="Left"
+                                    HorizontalContentAlignment="Center"
+                                    Value="{Binding PortIndex}"
+                                    u:FormItem.Label="端口位置"
+                                    ToolTip.Tip="端口在分隔后的索引位置 (从0开始)" />
+
+                <u:NumericIntUpDown Width="100"
+                                    Minimum="0"
+                                    Maximum="10"
+                                    HorizontalAlignment="Left"
+                                    HorizontalContentAlignment="Center"
+                                    Value="{Binding UsernameIndex}"
+                                    u:FormItem.Label="用户名位置"
+                                    ToolTip.Tip="用户名在分隔后的索引位置 (从0开始)" />
+
+                <u:NumericIntUpDown Width="100"
+                                    Minimum="0"
+                                    Maximum="10"
+                                    HorizontalAlignment="Left"
+                                    HorizontalContentAlignment="Center"
+                                    Value="{Binding PasswordIndex}"
+                                    u:FormItem.Label="密码位置"
+                                    ToolTip.Tip="密码在分隔后的索引位置 (从0开始)" />
+            </u:Form>
+
+            <u:Divider Content="格式示例" Margin="0,10,0,0" />
+            <TextBlock Text="IP,端口,用户名,密码"
+                       Foreground="{DynamicResource SemiColorText2}"
+                       FontSize="12"
+                       Margin="10,0" />
+            <TextBlock Text="192.168.1.1,8080,admin,123456"
+                       Foreground="{DynamicResource SemiColorText3}"
+                       FontSize="12"
+                       FontFamily="Consolas,Monaco,monospace"
+                       Margin="10,0" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

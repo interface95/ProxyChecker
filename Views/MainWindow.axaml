@@ -1,0 +1,27 @@
+<u:UrsaWindow xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:ProxyChecker.ViewModels"
+             xmlns:views="clr-namespace:ProxyChecker.Views"
+             xmlns:u="https://irihi.tech/ursa"
+             mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="700"
+             x:Class="ProxyChecker.Views.MainWindow"
+             x:DataType="vm:MainViewModel"
+             Title="代理IP检测工具"
+             Width="1200" Height="700"
+             MinWidth="900" MinHeight="600"
+             WindowStartupLocation="CenterScreen">
+
+    <u:UrsaWindow.DataContext>
+        <vm:MainViewModel />
+    </u:UrsaWindow.DataContext>
+
+    <!-- 标题栏右侧内容 -->
+    <u:UrsaWindow.RightContent>
+        <views:TitleBarRightContent />
+    </u:UrsaWindow.RightContent>
+
+    <!-- 主视图 -->
+    <views:MainView />
+</u:UrsaWindow>

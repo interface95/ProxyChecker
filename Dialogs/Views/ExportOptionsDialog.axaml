@@ -1,0 +1,72 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:models="clr-namespace:ProxyChecker.Dialogs.Models"
+             xmlns:u="https://irihi.tech/ursa"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="380"
+             x:Class="ProxyChecker.Dialogs.Views.ExportOptionsDialog"
+             x:DataType="models:ExportOptionsModel">
+    <Design.DataContext>
+        <models:ExportOptionsModel />
+    </Design.DataContext>
+
+    <Border Padding="5,0">
+        <StackPanel Spacing="5">
+            <!-- Header -->
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="导出设置" Classes="H4" Theme="{StaticResource TitleTextBlock}"/>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                    <Button Content="全选" Command="{Binding SelectAll}" Classes="Tertiary" Theme="{DynamicResource BorderlessButton}"/>
+                    <Button Content="取消全选" Command="{Binding DeselectAll}" Classes="Tertiary" Theme="{DynamicResource BorderlessButton}"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Options Groups -->
+            <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,8,*" Margin="0,8">
+                <!-- Proxy Info Group -->
+                <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" 
+                        Background="{DynamicResource SemiColorFill0}" 
+                        CornerRadius="6" Padding="12" Margin="0,0,0,8">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="代理信息" Foreground="{DynamicResource SemiColorText2}" FontWeight="Bold"/>
+                        <UniformGrid Columns="2" Rows="2">
+                            <CheckBox Content="IP" IsChecked="{Binding IncludeIp}" Margin="0,4"/>
+                            <CheckBox Content="端口" IsChecked="{Binding IncludePort}" Margin="0,4"/>
+                            <CheckBox Content="用户名" IsChecked="{Binding IncludeUsername}" Margin="0,4"/>
+                            <CheckBox Content="密码" IsChecked="{Binding IncludePassword}" Margin="0,4"/>
+                        </UniformGrid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Check Info Group -->
+                 <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" 
+                        Background="{DynamicResource SemiColorFill0}" 
+                        CornerRadius="6" Padding="12">
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="检测信息" Foreground="{DynamicResource SemiColorText2}" FontWeight="Bold"/>
+                        <UniformGrid Columns="2" Rows="2">
+                            <CheckBox Content="实际IP" IsChecked="{Binding IncludeRealIp}" Margin="0,4"/>
+                            <CheckBox Content="归属地" IsChecked="{Binding IncludeLocation}" Margin="0,4"/>
+                            <CheckBox Content="ISP" IsChecked="{Binding IncludeIsp}" Margin="0,4"/>
+                            <CheckBox Content="响应时间" IsChecked="{Binding IncludeResponseTime}" Margin="0,4"/>
+                        </UniformGrid>
+                    </StackPanel>
+                </Border>
+            </Grid>
+            
+            <u:Divider Margin="0,4"/>
+
+            <Grid ColumnDefinitions="Auto,*" Margin="0,4">
+                 <CheckBox Grid.Column="0" Content="仅导出成功的代理" IsChecked="{Binding OnlySuccess}" 
+                           FontWeight="Bold"
+                           VerticalAlignment="Center"/>
+                
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" HorizontalAlignment="Right">
+                    <Button Content="取消" Command="{Binding Cancel}" Classes="Tertiary" Width="80"/>
+                    <Button Content="确定" Command="{Binding Confirm}" Classes="Primary" Theme="{DynamicResource SolidButton}" Width="80"/>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </Border>
+</UserControl>

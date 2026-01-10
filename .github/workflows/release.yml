@@ -1,0 +1,243 @@
+name: Release Multi-Platform AOT
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET 10
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build and Publish Windows x64 AOT
+      run: dotnet publish ProxyChecker.csproj -r win-x64 -c Release --self-contained true -p:PublishAot=true -o ./publish/win-x64
+
+    - name: Build and Publish Windows x86 AOT
+      run: dotnet publish ProxyChecker.csproj -r win-x86 -c Release --self-contained true -p:PublishAot=true -o ./publish/win-x86
+
+    - name: Build and Publish Windows ARM64 AOT
+      run: dotnet publish ProxyChecker.csproj -r win-arm64 -c Release --self-contained true -p:PublishAot=true -o ./publish/win-arm64
+
+    - name: Create Archives
+      run: |
+        cd publish
+        7z a ../ProxyChecker-win-x64.zip ./win-x64/*
+        7z a ../ProxyChecker-win-x86.zip ./win-x86/*
+        7z a ../ProxyChecker-win-arm64.zip ./win-arm64/*
+
+    - name: Upload Windows Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-releases
+        path: |
+          *.zip
+
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET 10
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build and Publish macOS x64 AOT
+      run: dotnet publish ProxyChecker.csproj -r osx-x64 -c Release --self-contained true -p:PublishAot=true -o ./publish/osx-x64
+
+    - name: Build and Publish macOS ARM64 AOT
+      run: dotnet publish ProxyChecker.csproj -r osx-arm64 -c Release --self-contained true -p:PublishAot=true -o ./publish/osx-arm64
+
+    - name: Create macOS App Bundles
+      run: |
+        # Create x64 app bundle
+        mkdir -p "ProxyChecker-x64.app/Contents/MacOS"
+        mkdir -p "ProxyChecker-x64.app/Contents/Resources"
+        cp -r ./publish/osx-x64/* "ProxyChecker-x64.app/Contents/MacOS/"
+
+        # Create ARM64 app bundle  
+        mkdir -p "ProxyChecker-arm64.app/Contents/MacOS"
+        mkdir -p "ProxyChecker-arm64.app/Contents/Resources"
+        cp -r ./publish/osx-arm64/* "ProxyChecker-arm64.app/Contents/MacOS/"
+
+        # Create Info.plist for both
+        cat > "ProxyChecker-x64.app/Contents/Info.plist" << 'EOF'
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+            <key>CFBundleExecutable</key>
+            <string>ProxyChecker</string>
+            <key>CFBundleIdentifier</key>
+            <string>com.example.ProxyChecker</string>
+            <key>CFBundleName</key>
+            <string>ProxyChecker</string>
+            <key>CFBundleVersion</key>
+            <string>1.0.0</string>
+            <key>CFBundlePackageType</key>
+            <string>APPL</string>
+        </dict>
+        </plist>
+        EOF
+
+        cp "ProxyChecker-x64.app/Contents/Info.plist" "ProxyChecker-arm64.app/Contents/Info.plist"
+
+        # Make executables executable and sign with ad-hoc signature
+        chmod +x "ProxyChecker-x64.app/Contents/MacOS/ProxyChecker"
+        chmod +x "ProxyChecker-arm64.app/Contents/MacOS/ProxyChecker"
+
+        # Remove debug symbol files
+        rm -rf "ProxyChecker-x64.app/Contents/MacOS/ProxyChecker.dSYM"
+        rm -rf "ProxyChecker-arm64.app/Contents/MacOS/ProxyChecker.dSYM"
+
+        codesign --force --deep --sign - "ProxyChecker-x64.app"
+        codesign --force --deep --sign - "ProxyChecker-arm64.app"
+
+    - name: Create Archives
+      run: |
+        tar -czf ProxyChecker-osx-x64.tar.gz ProxyChecker-x64.app
+        tar -czf ProxyChecker-osx-arm64.tar.gz ProxyChecker-arm64.app
+
+    - name: Upload macOS Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: macos-releases
+        path: |
+          *.tar.gz
+
+  build-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: 
+          - name: x64
+            runtime: linux-x64
+            cross_compile: false
+          - name: arm64
+            runtime: linux-arm64
+            cross_compile: true
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET 10
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Install cross-compilation tools and dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang zlib1g-dev dpkg-dev
+
+        if [ "${{ matrix.arch.cross_compile }}" = "true" ]; then
+          # Install ARM64 cross-compilation tools
+          sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu binutils-aarch64-linux-gnu
+          # Create symlinks to ensure the correct tools are used
+          sudo ln -sf /usr/bin/aarch64-linux-gnu-objcopy /usr/local/bin/objcopy
+          sudo ln -sf /usr/bin/aarch64-linux-gnu-strip /usr/local/bin/strip
+        else
+          # For x64, install native tools
+          sudo apt-get install -y build-essential
+        fi
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Publish AOT Linux ${{ matrix.arch.name }}
+      run: |
+        if [ "${{ matrix.arch.cross_compile }}" = "true" ]; then
+          export CC=aarch64-linux-gnu-gcc
+          export CXX=aarch64-linux-gnu-g++
+          CROSS_COMPILE_FLAG="-p:CrossCompiling=true"
+        else
+          export CC=gcc
+          export CXX=g++
+          CROSS_COMPILE_FLAG=""
+        fi
+
+        # Verify tools are available
+        which objcopy
+        which strip
+        objcopy --version
+
+        dotnet publish ProxyChecker.csproj \
+          --configuration Release \
+          --runtime ${{ matrix.arch.runtime }} \
+          --self-contained true \
+          --output ./publish/${{ matrix.arch.name }} \
+          -p:PublishAot=true \
+          -p:StripSymbols=true \
+          -p:PublishTrimmed=true \
+          -p:TrimMode=link \
+          $CROSS_COMPILE_FLAG
+
+    - name: Create Archives
+      run: |
+        cd ./publish/${{ matrix.arch.name }}
+        tar -czf ../../ProxyChecker-linux-${{ matrix.arch.name }}.tar.gz .
+
+    - name: Upload Linux ${{ matrix.arch.name }} Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: linux-${{ matrix.arch.name }}-releases
+        path: |
+          *.tar.gz
+
+  create-release:
+    needs: [build-windows, build-macos, build-linux]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+    - name: Download Windows Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: windows-releases
+
+    - name: Download macOS Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: macos-releases
+
+    - name: Download Linux x64 Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: linux-x64-releases
+
+    - name: Download Linux ARM64 Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: linux-arm64-releases
+
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          *.zip
+          *.tar.gz
+        draft: false
+        prerelease: false
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

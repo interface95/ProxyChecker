@@ -1,0 +1,26 @@
+# Build results
+[Bb]in/
+[Oo]bj/
+
+# User-specific settings
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+
+# VS Code
+.vscode/
+
+# IDE specific
+.idea/
+*.DotSettings.user
+
+# OS generated
+.DS_Store
+Thumbs.db
+
+# Publish
+publish/
+
+# Local configuration
+local.settings.json
