@@ -157,8 +157,11 @@ jobs:
       run: |
         vpk pack -u ProxyChecker-arm64 -v ${{ steps.get_version.outputs.VERSION }} -p ./publish/osx-arm64/ProxyChecker.app -e ProxyChecker
         mv Releases Releases-arm64
-        # Rename ARM64 RELEASES to avoid conflict
-        [ -f Releases-arm64/RELEASES-osx ] && mv Releases-arm64/RELEASES-osx Releases-arm64/RELEASES-osx-arm64
+        # Rename ARM64 metadata files to avoid conflict with x64
+        cd Releases-arm64
+        [ -f RELEASES-osx ] && mv RELEASES-osx RELEASES-osx-arm64
+        [ -f releases.osx.json ] && mv releases.osx.json releases-osx-arm64.json
+        [ -f assets.osx.json ] && mv assets.osx.json assets-osx-arm64.json
 
     - name: Upload macOS Artifacts
       uses: actions/upload-artifact@v4
