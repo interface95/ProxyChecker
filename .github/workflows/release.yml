@@ -36,9 +36,16 @@ jobs:
     - name: Install Velopack CLI
       run: dotnet tool install -g vpk
 
+    - name: Get Version
+      id: get_version
+      shell: pwsh
+      run: |
+        $version = "${{ github.ref_name }}".TrimStart('v')
+        echo "VERSION=$version" >> $env:GITHUB_OUTPUT
+
     - name: Pack Release
       run: |
-        vpk pack -u ProxyChecker -v ${{ github.ref_name }} -p ./publish/win-x64 -e ProxyChecker.exe
+        vpk pack -u ProxyChecker -v ${{ steps.get_version.outputs.VERSION }} -p ./publish/win-x64 -e ProxyChecker.exe
 
     - name: Create Archives
       run: |
@@ -75,9 +82,15 @@ jobs:
     - name: Install Velopack CLI
       run: dotnet tool install -g vpk
 
+    - name: Get Version
+      id: get_version
+      run: |
+        VERSION=${GITHUB_REF_NAME#v}
+        echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
     - name: Pack Release
       run: |
-        vpk pack -u ProxyChecker -v ${{ github.ref_name }} -p ./publish/osx-x64 -e ProxyChecker
+        vpk pack -u ProxyChecker -v ${{ steps.get_version.outputs.VERSION }} -p ./publish/osx-x64 -e ProxyChecker
 
     - name: Create Archives
       run: |
