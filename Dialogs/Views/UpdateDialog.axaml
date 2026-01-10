@@ -45,8 +45,7 @@
                 Opacity="{Binding Statistics.ProgressPercentage,
                           Converter={x:Static converters:ProgressConverter.ProgressToOpacityConverter}}"
                 Classes="Circle"
-                Content="PC"
-                FontSize="48">
+                Source="avares://ProxyChecker/Assets/Logo.png">
                  <u:Avatar.Styles>
                     <Style Selector="Image">
                         <Setter Property="Transitions">
