@@ -112,6 +112,7 @@ public partial class UpdateViewModel : ObservableObject, IDialogContext
         if (IsReadyToRestart)
         {
             // 下载完成后点击"稍后"，退出应用以便下次启动使用新版本
+            App.SkipExitConfirmation = true;
             if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 desktop.Shutdown();

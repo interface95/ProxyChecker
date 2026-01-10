@@ -7,6 +7,11 @@ namespace ProxyChecker;
 
 public partial class App : Application
 {
+    /// <summary>
+    /// 是否跳过退出确认对话框（用于更新后退出）
+    /// </summary>
+    public static bool SkipExitConfirmation { get; set; }
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);

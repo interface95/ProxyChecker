@@ -18,6 +18,12 @@ public partial class MainWindow : UrsaWindow
 
     protected override async Task<bool> CanClose()
     {
+        // 如果是更新后退出，跳过确认对话框
+        if (App.SkipExitConfirmation)
+        {
+            return true;
+        }
+
         var result = await MessageBox.ShowOverlayAsync("您确定要退出吗？", "退出提示", button: MessageBoxButton.YesNo);
         return result == MessageBoxResult.Yes;
     }
