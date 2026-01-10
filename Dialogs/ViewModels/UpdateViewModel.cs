@@ -1,5 +1,7 @@
 using System;
 using System.Threading.Tasks;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Irihi.Avalonia.Shared.Contracts;
@@ -107,7 +109,18 @@ public partial class UpdateViewModel : ObservableObject, IDialogContext
     [RelayCommand]
     private void Skip()
     {
-        Close();
+        if (IsReadyToRestart)
+        {
+            // 下载完成后点击"稍后"，退出应用以便下次启动使用新版本
+            if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                desktop.Shutdown();
+            }
+        }
+        else
+        {
+            Close();
+        }
     }
 
     public void Close()
