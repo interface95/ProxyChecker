@@ -4,68 +4,80 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="using:ProxyChecker.Dialogs.ViewModels"
              xmlns:u="https://irihi.tech/ursa"
-             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="300"
+             mc:Ignorable="d" d:DesignWidth="420" d:DesignHeight="280"
              x:Class="ProxyChecker.Dialogs.Views.UpdateDialog"
              x:DataType="vm:UpdateViewModel">
     <Design.DataContext>
         <vm:UpdateViewModel />
     </Design.DataContext>
-    <Grid RowDefinitions="Auto, *, Auto" Margin="20">
-        <!-- Header -->
-        <TextBlock Grid.Row="0" 
-                   Text="{Binding Title}" 
-                   Theme="{DynamicResource TitleTextBlock}"
-                   FontSize="18"
-                   FontWeight="Bold"
-                   Margin="0,0,0,15"/>
 
-        <!-- Content -->
-        <Border Grid.Row="1" 
-                CornerRadius="8" 
-                Background="{DynamicResource SemiColorFill0}"
-                Padding="12"
-                Margin="0,0,0,20">
-            <ScrollViewer>
-                <TextBlock Text="{Binding ReleaseNotes}" 
+    <Panel>
+        <!-- 有更新时的界面 -->
+        <Grid RowDefinitions="Auto, *, Auto" Margin="24" IsVisible="{Binding IsAvailable}">
+            <!-- Header -->
+            <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,16">
+                <TextBlock Text="🚀 发现新版本" FontSize="20" FontWeight="Bold"/>
+                <TextBlock Text="{Binding Title}" Foreground="{DynamicResource SemiColorText2}"/>
+            </StackPanel>
+
+            <!-- Content -->
+            <Border Grid.Row="1"
+                    CornerRadius="8"
+                    Background="{DynamicResource SemiColorFill0}"
+                    Padding="16"
+                    Margin="0,0,0,16">
+                <TextBlock Text="{Binding ReleaseNotes}"
                            TextWrapping="Wrap"
                            Foreground="{DynamicResource SemiColorText1}"/>
-            </ScrollViewer>
-        </Border>
+            </Border>
 
-        <!-- Progress (Visible when downloading) -->
-        <StackPanel Grid.Row="1" 
-                    VerticalAlignment="Center" 
-                    Spacing="10" 
-                    IsVisible="{Binding IsDownloading}">
-             <ProgressBar Value="{Binding Progress}" 
-                          Maximum="100" 
-                          Height="6"/>
-             <TextBlock Text="{Binding Progress, StringFormat='下载中... {0:F0}%'}" 
-                        HorizontalAlignment="Center"
-                        Foreground="{DynamicResource SemiColorText2}"/>
-        </StackPanel>
+            <!-- Progress (下载时显示) -->
+            <StackPanel Grid.Row="1"
+                        VerticalAlignment="Center"
+                        Spacing="10"
+                        IsVisible="{Binding IsDownloading}">
+                <ProgressBar Value="{Binding Progress}" Maximum="100" Height="6"/>
+                <TextBlock Text="{Binding Progress, StringFormat='下载中... {0:F0}%'}"
+                           HorizontalAlignment="Center"
+                           Foreground="{DynamicResource SemiColorText2}"/>
+            </StackPanel>
 
-        <!-- Footer Actions -->
-        <Grid Grid.Row="2" ColumnDefinitions="Auto, *, Auto">
-            <Button Grid.Column="0" 
-                    Content="跳过" 
-                    Classes="Tertiary" 
-                    Theme="{DynamicResource BorderlessButton}"
-                    Command="{Binding SkipCommand}"
-                    IsVisible="{Binding IsAvailable}"/>
-
-            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="10">
-                <Button Content="稍后" 
-                        Classes="Secondary" 
+            <!-- Buttons -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+                <Button Content="稍后"
+                        Classes="Secondary"
                         Command="{Binding SkipCommand}"
-                        IsVisible="{Binding IsAvailable}"/>
-                
-                <Button Content="{Binding ActionButtonText}" 
-                        Classes="Primary" 
-                        Theme="{DynamicResource SolidButton}"
+                        IsVisible="{Binding ShowLaterButton}"/>
+
+                <Button Content="{Binding ActionButtonText}"
+                        Classes="Primary"
                         Command="{Binding DoUpdateCommand}"
-                        IsEnabled="{Binding CanUpdate}"/>
+                        IsEnabled="{Binding CanUpdate}"
+                        MinWidth="100"/>
             </StackPanel>
         </Grid>
-    </Grid>
+
+        <!-- 无更新时的界面 -->
+        <Grid RowDefinitions="*, Auto, Auto" Margin="24" IsVisible="{Binding !IsAvailable}">
+            <StackPanel Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="12">
+                <TextBlock Text="✓" FontSize="48" HorizontalAlignment="Center"/>
+                <TextBlock Text="{Binding Title}"
+                           FontSize="18"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="{Binding ReleaseNotes}"
+                           Foreground="{DynamicResource SemiColorText2}"
+                           HorizontalAlignment="Center"
+                           Margin="0,8,0,0"/>
+            </StackPanel>
+
+            <Button Grid.Row="1"
+                    Content="关闭"
+                    Classes="Secondary"
+                    Command="{Binding SkipCommand}"
+                    HorizontalAlignment="Center"
+                    MinWidth="100"
+                    Margin="0,16,0,0"/>
+        </Grid>
+    </Panel>
 </UserControl>

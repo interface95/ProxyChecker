@@ -33,5 +33,8 @@
     <Compile Update="Dialogs\Views\AboutDialog.axaml.cs">
       <DependentUpon>AboutDialog.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\AboutView.axaml.cs">
+      <DependentUpon>AboutView.axaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>

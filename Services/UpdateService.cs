@@ -47,6 +47,7 @@ public class UpdateService
     {
         if (_updateManager == null || _updateInfo == null) return;
 
-        _updateManager.WaitExitThenApplyUpdates(_updateInfo);
+        // 应用更新并重启应用
+        _updateManager.ApplyUpdatesAndRestart(_updateInfo);
     }
 }

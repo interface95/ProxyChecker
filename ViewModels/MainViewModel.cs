@@ -25,6 +25,8 @@ using ProxyChecker.Dialogs.ViewModels;
 
 namespace ProxyChecker.ViewModels;
 
+public enum AppPage { Main, About }
+
 public partial class MainViewModel : ObservableObject
 {
     // === 文件 ===
@@ -76,6 +78,21 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty] private string _searchText = "";
     [ObservableProperty] private string _filterIsp = "全部";
 
+    // === 页面导航 ===
+    [ObservableProperty] private AppPage _currentPage = AppPage.Main;
+    [ObservableProperty] private int _pageIndex;
+
+    public bool IsMainViewVisible => CurrentPage == AppPage.Main;
+    public bool IsAboutViewVisible => CurrentPage == AppPage.About;
+
+    [ObservableProperty] private AboutViewModel _aboutViewModel;
+
+    partial void OnCurrentPageChanged(AppPage value)
+    {
+        OnPropertyChanged(nameof(IsMainViewVisible));
+        OnPropertyChanged(nameof(IsAboutViewVisible));
+    }
+
     // === TreeDataGrid ===
     [ObservableProperty] private FlatTreeDataGridSource<CheckResult>? _resultsSource;
 
@@ -91,6 +108,7 @@ public partial class MainViewModel : ObservableObject
     public MainViewModel()
     {
         _updateService = new UpdateService();
+        _aboutViewModel = new AboutViewModel(_updateService);
 
         // 从配置加载设置
         var setting = GlobalSetting.Instance.Setting;
@@ -248,17 +266,17 @@ public partial class MainViewModel : ObservableObject
     private Task CheckUpdateManualAsync() => CheckUpdateAsync(false);
 
     [RelayCommand]
-    private async Task ShowAboutAsync()
+    private void ShowAbout()
     {
-        var vm = new AboutViewModel(_updateService);
-        await OverlayDialog.ShowModal<ProxyChecker.Dialogs.Views.AboutDialog, AboutViewModel>(
-            vm,
-            options: new OverlayDialogOptions
-            {
-                Buttons = DialogButton.OK,
-                Title = "关于",
-                CanLightDismiss = true
-            });
+        CurrentPage = AppPage.About;
+        PageIndex = 1;
+    }
+
+    [RelayCommand]
+    private void GoBack()
+    {
+        CurrentPage = AppPage.Main;
+        PageIndex = 0;
     }
 
     [RelayCommand]

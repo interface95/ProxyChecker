@@ -23,6 +23,12 @@ public partial class UpdateViewModel : ObservableObject
     [ObservableProperty] private bool _canUpdate = false;
     [ObservableProperty] private bool _isReadyToRestart = false;
 
+    // 派生属性：是否显示"稍后"按钮
+    public bool ShowLaterButton => !IsReadyToRestart;
+
+    partial void OnIsReadyToRestartChanged(bool value) =>
+        OnPropertyChanged(nameof(ShowLaterButton));
+
     #if !DEBUG
     
     public UpdateViewModel()

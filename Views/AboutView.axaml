@@ -1,0 +1,108 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:ProxyChecker.ViewModels"
+             xmlns:u="https://irihi.tech/ursa"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="ProxyChecker.Views.AboutView"
+             x:DataType="vm:MainViewModel">
+
+    <Panel>
+        <!-- 背景装饰 -->
+        <Border Width="300" Height="300"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Margin="0,-50,-50,0"
+                CornerRadius="150"
+                Background="{DynamicResource SemiColorPrimary}"
+                Opacity="0.05"/>
+
+        <Border Width="200" Height="200"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                Margin="-50,0,0,-50"
+                CornerRadius="100"
+                Background="{DynamicResource SemiColorPrimary}"
+                Opacity="0.03"/>
+
+        <!-- 主内容 -->
+        <Grid RowDefinitions="Auto, *, Auto">
+            <!-- 顶部返回栏 -->
+            <Button Grid.Row="0"
+                    Command="{Binding GoBackCommand}"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Padding="6"
+                    Margin="24,20,0,0"
+                    Width="32"
+                    CornerRadius="30"
+                    HorizontalAlignment="Left"
+                    Height="32"
+                    ToolTip.Tip="返回检测页面"
+                    Cursor="Hand">
+                <PathIcon Data="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"
+                          Width="18" Height="18"
+                          Foreground="{DynamicResource SemiColorText1}"/>
+            </Button>
+
+            <!-- 关于内容 (居中显示) -->
+            <Grid Grid.Row="1" MaxWidth="500" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Border Background="{DynamicResource SemiColorBackground1}"
+                        BorderBrush="{DynamicResource SemiColorBorder}"
+                        BorderThickness="1"
+                        CornerRadius="20"
+                        Padding="40,32">
+                    <StackPanel Spacing="24">
+                        <!-- Logo Area -->
+                        <Border Width="72" Height="72"
+                                CornerRadius="18"
+                                Background="{DynamicResource SemiColorPrimary}"
+                                HorizontalAlignment="Center">
+                            <PathIcon Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"
+                                      Width="36" Height="36"
+                                      Foreground="White"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"/>
+                        </Border>
+
+                        <!-- Title -->
+                        <TextBlock Text="ProxyChecker"
+                                   FontSize="28"
+                                   FontWeight="SemiBold"
+                                   HorizontalAlignment="Center"/>
+
+                        <!-- Version -->
+                        <TextBlock Text="{Binding AboutViewModel.AppVersion}"
+                                   Foreground="{DynamicResource SemiColorText2}"
+                                   FontSize="14"
+                                   HorizontalAlignment="Center"/>
+
+                        <!-- Separator -->
+                        <Border Height="1"
+                                Background="{DynamicResource SemiColorBorder}"
+                                Margin="0,8,0,0"/>
+
+                        <!-- Description -->
+                        <TextBlock Text="{Binding AboutViewModel.Description}"
+                                   TextWrapping="Wrap"
+                                   Foreground="{DynamicResource SemiColorText1}"
+                                   LineHeight="24"
+                                   FontSize="14"
+                                   TextAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Footer / Action Area -->
+            <Button Grid.Row="2"
+                    Content="检查更新"
+                    Classes="Primary"
+                    Command="{Binding AboutViewModel.CheckUpdateCommand}"
+                    HorizontalAlignment="Center"
+                    Margin="0,0,0,40"
+                    MinWidth="120"
+                    Height="36"/>
+        </Grid>
+    </Panel>
+</UserControl>
