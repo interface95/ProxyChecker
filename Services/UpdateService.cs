@@ -38,9 +38,17 @@ public class UpdateService
 
     public async Task DownloadUpdatesAsync(Action<int> progress)
     {
-        if (_updateManager == null || _updateInfo == null) return;
+        if (_updateManager == null || _updateInfo == null)
+            throw new InvalidOperationException("UpdateManager or UpdateInfo is not initialized. Please check for updates first.");
 
-        await _updateManager.DownloadUpdatesAsync(_updateInfo, progress);
+        try
+        {
+            await _updateManager.DownloadUpdatesAsync(_updateInfo, progress);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"下载更新失败: {ex.Message}", ex);
+        }
     }
 
     public void ApplyUpdatesAndRestart()

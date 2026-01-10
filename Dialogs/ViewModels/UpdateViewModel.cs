@@ -89,21 +89,34 @@ public partial class UpdateViewModel : ObservableObject, IDialogContext
         if (!IsAvailable)
         {
             // Close dialog
+            Close();
             return;
         }
 
         IsDownloading = true;
-        IsAvailable = false; // Hide buttons temporarily or change state
+        IsAvailable = false;
+        CanUpdate = false;
         Title = "正在下载更新...";
 
-        await _updateService.DownloadUpdatesAsync(progress => { Progress = progress; });
+        try
+        {
+            await _updateService.DownloadUpdatesAsync(progress => { Progress = progress; });
 
-        IsDownloading = false;
-        IsReadyToRestart = true;
-        Title = "更新准备就绪";
-        ActionButtonText = "立即重启";
-        ReleaseNotes = "更新已下载完成，请重启软件以应用更改。";
-        CanUpdate = true; // Enable button for restart
+            IsDownloading = false;
+            IsReadyToRestart = true;
+            Title = "更新准备就绪";
+            ActionButtonText = "立即重启";
+            ReleaseNotes = "更新已下载完成，请重启软件以应用更改。";
+            CanUpdate = true;
+        }
+        catch (Exception ex)
+        {
+            IsDownloading = false;
+            IsAvailable = true;
+            CanUpdate = true;
+            Title = "下载失败";
+            ReleaseNotes = $"下载更新时出错：{ex.Message}";
+        }
     }
 
     [RelayCommand]
