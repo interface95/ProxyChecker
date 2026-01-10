@@ -97,60 +97,53 @@
         </Panel>
 
         <!-- Controls -->
-        <Border
-            Padding="10"
-            Background="{DynamicResource SemiBackground0Color}"
-            Theme="{StaticResource CardBorder}"
-            HorizontalAlignment="Center"
-            CornerRadius="8">
-            <StackPanel Orientation="Horizontal" Spacing="10">
+        <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center">
 
-                <!-- Stop / Cancel -->
-                <u:IconButton
-                    Name="StopButton"
-                    Theme="{StaticResource BorderlessIconButton}"
-                    Classes="Danger"
-                    ToolTip.Tip="取消"
-                    Icon="{StaticResource SemiIconStop}"
-                    Command="{Binding StopCommand}"
-                    IsVisible="{Binding Status,
-                                Converter={StaticResource EnumToBooleanConverter},
-                                ConverterParameter={x:Static models:DownloadStatus.Downloading},
-                                Mode=OneWay}" />
+            <!-- Stop / Cancel -->
+            <u:IconButton
+                Name="StopButton"
+                Theme="{StaticResource BorderlessIconButton}"
+                Classes="Danger"
+                ToolTip.Tip="取消"
+                Icon="{StaticResource SemiIconStop}"
+                Command="{Binding StopCommand}"
+                IsVisible="{Binding Status,
+                            Converter={StaticResource EnumToBooleanConverter},
+                            ConverterParameter={x:Static models:DownloadStatus.Downloading},
+                            Mode=OneWay}" />
 
-                <!-- Restart / Retry -->
-                <u:IconButton
-                    Name="RestartButton"
-                    Theme="{StaticResource BorderlessIconButton}"
-                    Classes="Tertiary"
-                    ToolTip.Tip="重试"
-                    Icon="{StaticResource SemiIconRefresh}"
-                    Command="{Binding RestartCommand}"
-                    IsVisible="{Binding Status,
-                                Converter={StaticResource EnumToBooleanConverter},
-                                ConverterParameter={x:Static models:DownloadStatus.Failed},
-                                Mode=OneWay}"/>
+            <!-- Restart / Retry -->
+            <u:IconButton
+                Name="RestartButton"
+                Theme="{StaticResource BorderlessIconButton}"
+                Classes="Tertiary"
+                ToolTip.Tip="重试"
+                Icon="{StaticResource SemiIconRefresh}"
+                Command="{Binding RestartCommand}"
+                IsVisible="{Binding Status,
+                            Converter={StaticResource EnumToBooleanConverter},
+                            ConverterParameter={x:Static models:DownloadStatus.Failed},
+                            Mode=OneWay}"/>
 
-                <!-- Apply and Restart App -->
-                <Button
-                    Content="立即重启"
-                    Classes="Primary"
-                    Command="{Binding ApplyAndRestartCommand}"
-                    IsVisible="{Binding Status,
-                                Converter={StaticResource EnumToBooleanConverter},
-                                ConverterParameter={x:Static models:DownloadStatus.Completed},
-                                Mode=OneWay}" />
+            <!-- Apply and Restart App -->
+            <Button
+                Content="立即重启"
+                Classes="Primary"
+                Command="{Binding ApplyAndRestartCommand}"
+                IsVisible="{Binding Status,
+                            Converter={StaticResource EnumToBooleanConverter},
+                            ConverterParameter={x:Static models:DownloadStatus.Completed},
+                            Mode=OneWay}" />
 
-                <!-- Close (if failed or not started) -->
-                <Button
-                    Content="关闭"
-                    Classes="Secondary"
-                    Command="{Binding CloseCommand}"
-                    IsVisible="{Binding Status,
-                                Converter={StaticResource EnumToBooleanConverter},
-                                ConverterParameter={x:Static models:DownloadStatus.Failed},
-                                Mode=OneWay}" />
-            </StackPanel>
-        </Border>
+            <!-- Close (if failed or not started) -->
+            <Button
+                Content="关闭"
+                Classes="Secondary"
+                Command="{Binding CloseCommand}"
+                IsVisible="{Binding Status,
+                            Converter={StaticResource EnumToBooleanConverter},
+                            ConverterParameter={x:Static models:DownloadStatus.Failed},
+                            Mode=OneWay}" />
+        </StackPanel>
     </StackPanel>
 </UserControl>
