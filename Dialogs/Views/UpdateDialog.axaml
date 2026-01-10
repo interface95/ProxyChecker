@@ -20,27 +20,28 @@
                 <TextBlock Text="{Binding Title}" Foreground="{DynamicResource SemiColorText2}"/>
             </StackPanel>
 
-            <!-- Content -->
-            <Border Grid.Row="1"
-                    CornerRadius="8"
-                    Background="{DynamicResource SemiColorFill0}"
-                    Padding="16"
-                    Margin="0,0,0,16">
-                <TextBlock Text="{Binding ReleaseNotes}"
-                           TextWrapping="Wrap"
-                           Foreground="{DynamicResource SemiColorText1}"/>
-            </Border>
+            <!-- Content / Progress (同一区域切换显示) -->
+            <Grid Grid.Row="1">
+                <!-- Release Notes (未下载时显示) -->
+                <Border CornerRadius="8"
+                        Background="{DynamicResource SemiColorFill0}"
+                        Padding="16"
+                        IsVisible="{Binding !IsDownloading}">
+                    <TextBlock Text="{Binding ReleaseNotes}"
+                               TextWrapping="Wrap"
+                               Foreground="{DynamicResource SemiColorText1}"/>
+                </Border>
 
-            <!-- Progress (下载时显示) -->
-            <StackPanel Grid.Row="1"
-                        VerticalAlignment="Center"
-                        Spacing="10"
-                        IsVisible="{Binding IsDownloading}">
-                <ProgressBar Value="{Binding Progress}" Maximum="100" Height="6"/>
-                <TextBlock Text="{Binding Progress, StringFormat='下载中... {0:F0}%'}"
-                           HorizontalAlignment="Center"
-                           Foreground="{DynamicResource SemiColorText2}"/>
-            </StackPanel>
+                <!-- Progress (下载时显示) -->
+                <StackPanel VerticalAlignment="Center"
+                            Spacing="10"
+                            IsVisible="{Binding IsDownloading}">
+                    <ProgressBar Value="{Binding Progress}" Maximum="100" Height="6"/>
+                    <TextBlock Text="{Binding Progress, StringFormat='下载中... {0:F0}%'}"
+                               HorizontalAlignment="Center"
+                               Foreground="{DynamicResource SemiColorText2}"/>
+                </StackPanel>
+            </Grid>
 
             <!-- Buttons -->
             <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
