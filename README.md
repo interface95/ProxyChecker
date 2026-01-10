@@ -25,9 +25,9 @@
 
 请前往 [Releases](https://github.com/interface95/ProxyChecker/releases) 页面下载对应系统的最新版本。
 
-- **Windows**: 下载 `ProxyChecker-win-x64.zip`
-- **macOS**: 下载 `ProxyChecker-osx-x64.tar.gz` (Intel) 或 `ProxyChecker-osx-arm64.tar.gz` (Apple Silicon)
-- **Linux**: 下载 `ProxyChecker-linux-x64.tar.gz`
+- **Windows**: 下载 `ProxyChecker-windows-x64-installer.exe` (x64) 或 `ProxyChecker-windows-arm64-installer.exe` (ARM64)
+- **macOS**: 下载 `ProxyChecker-macos-x64-installer.pkg` (Intel) 或 `ProxyChecker-macos-arm64-installer.pkg` (Apple Silicon)
+- **Linux**: 下载 `ProxyChecker-linux-x64.tar.gz` 或 `ProxyChecker-linux-arm64.tar.gz`
 
 ### 运行
 
@@ -66,6 +66,7 @@
 | Git 状态 | 版本格式 | 说明 |
 |----------|----------|------|
 | 无 tag（开发中） | `v1.0.0-preview.20` | 预览版本，包含 commit 计数 |
+| 有 tag `v1.0.0-preview` | `v1.0.0-preview` | 预览发布版本 |
 | 有 tag `v1.0.0` | `v1.0.0` | 正式发布版本 |
 
 ### 发布新版本
@@ -77,12 +78,12 @@
 git add .
 git commit -m "Release v1.0.1"
 
-# 2. 创建 tag
-git tag v1.0.1
+# 2. 创建 tag (预览版加上 -preview 后缀)
+git tag v1.0.1-preview
 
 # 3. 推送 tag（触发 GitHub Actions 自动构建）
 git push origin main
-git push origin v1.0.1
+git push origin v1.0.1-preview
 ```
 
 推送 tag 后，GitHub Actions 会自动：

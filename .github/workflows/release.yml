@@ -26,6 +26,10 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
 
+    - name: Update Version Info
+      shell: pwsh
+      run: pwsh -File ./scripts/set-version.ps1
+
     - name: Build and Publish Windows x64 AOT
       run: dotnet publish ProxyChecker.csproj -r win-x64 -c Release --self-contained true -p:PublishAot=true -o ./publish/win-x64
 
@@ -72,6 +76,9 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
 
+    - name: Update Version Info
+      run: pwsh -File ./scripts/set-version.ps1
+
     - name: Build and Publish macOS x64 AOT
       run: dotnet publish ProxyChecker.csproj -r osx-x64 -c Release --self-contained true -p:PublishAot=true -o ./publish/osx-x64
 
@@ -87,13 +94,12 @@ jobs:
         VERSION=${GITHUB_REF_NAME#v}
         echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
-    - name: Create .app Bundle
+    - name: Create .app Bundle (x64)
       run: |
         mkdir -p ./publish/osx-x64/ProxyChecker.app/Contents/MacOS
         mkdir -p ./publish/osx-x64/ProxyChecker.app/Contents/Resources
         cp ./publish/osx-x64/ProxyChecker ./publish/osx-x64/ProxyChecker.app/Contents/MacOS/
         cp ./publish/osx-x64/*.dylib ./publish/osx-x64/ProxyChecker.app/Contents/MacOS/ 2>/dev/null || :
-        # Create a basic Info.plist
         cat > ./publish/osx-x64/ProxyChecker.app/Contents/Info.plist <<EOF
         <?xml version="1.0" encoding="UTF-8"?>
         <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -115,18 +121,48 @@ jobs:
         </plist>
         EOF
 
-    - name: Pack Release
+    - name: Create .app Bundle (ARM64)
       run: |
-        vpk pack -u ProxyChecker -v ${{ steps.get_version.outputs.VERSION }} -p ./publish/osx-x64/ProxyChecker.app -e ProxyChecker
+        mkdir -p ./publish/osx-arm64/ProxyChecker.app/Contents/MacOS
+        mkdir -p ./publish/osx-arm64/ProxyChecker.app/Contents/Resources
+        cp ./publish/osx-arm64/ProxyChecker ./publish/osx-arm64/ProxyChecker.app/Contents/MacOS/
+        cp ./publish/osx-arm64/*.dylib ./publish/osx-arm64/ProxyChecker.app/Contents/MacOS/ 2>/dev/null || :
+        cat > ./publish/osx-arm64/ProxyChecker.app/Contents/Info.plist <<EOF
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+            <key>CFBundleExecutable</key>
+            <string>ProxyChecker</string>
+            <key>CFBundleIdentifier</key>
+            <string>com.interface95.proxychecker</string>
+            <key>CFBundleName</key>
+            <string>ProxyChecker</string>
+            <key>CFBundleVersion</key>
+            <string>${{ steps.get_version.outputs.VERSION }}</string>
+            <key>CFBundleShortVersionString</key>
+            <string>${{ steps.get_version.outputs.VERSION }}</string>
+            <key>LSMinimumSystemVersion</key>
+            <string>11.0</string>
+        </dict>
+        </plist>
+        EOF
+
+    - name: Pack Release (x64)
+      run: |
+        vpk pack -u ProxyChecker -v ${{ steps.get_version.outputs.VERSION }} -p ./publish/osx-x64/ProxyChecker.app -e ProxyChecker -o ./Releases-x64
+
+    - name: Pack Release (ARM64)
+      run: |
+        vpk pack -u ProxyChecker-arm64 -v ${{ steps.get_version.outputs.VERSION }} -p ./publish/osx-arm64/ProxyChecker.app -e ProxyChecker -o ./Releases-arm64
 
     - name: Upload macOS Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: macos-releases
         path: |
-          Releases/*.pkg
-          Releases/*.nupkg
-          Releases/*.dmg
+          Releases-x64/*
+          Releases-arm64/*
 
   build-linux:
     runs-on: ubuntu-latest

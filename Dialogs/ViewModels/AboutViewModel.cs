@@ -1,4 +1,3 @@
-using System.Reflection;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ProxyChecker.Services;
@@ -18,11 +17,8 @@ public partial class AboutViewModel : ObservableObject
     {
         _updateService = updateService;
 
-        // Get version from assembly (use AssemblyInformationalVersion for full version info)
-        var informationalVersion = Assembly.GetExecutingAssembly()
-            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
-            ?.InformationalVersion;
-        AppVersion = !string.IsNullOrEmpty(informationalVersion) ? $"v{informationalVersion}" : "v1.0.0";
+        // 使用 VersionInfo 获取 Git 标签版本
+        AppVersion = VersionInfo.GetDisplayVersion();
 
         Description = "ProxyChecker 是一个高性能的代理检测工具，支持多协议检测、地理位置识别及并发验证。\n\n基于 Avalonia UI 与 Native AOT 技术构建，旨在提供跨平台、极致流畅的用户体验。";
     }
@@ -30,10 +26,7 @@ public partial class AboutViewModel : ObservableObject
     // Design-time constructor
     public AboutViewModel()
     {
-        var informationalVersion = Assembly.GetExecutingAssembly()
-            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
-            ?.InformationalVersion;
-        _appVersion = !string.IsNullOrEmpty(informationalVersion) ? $"v{informationalVersion}" : "v1.0.0-dev";
+        _appVersion = VersionInfo.GetDisplayVersion();
         _description = "开发预览版说明文本...";
     }
 
