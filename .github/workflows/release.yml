@@ -150,11 +150,13 @@ jobs:
 
     - name: Pack Release (x64)
       run: |
-        vpk pack -u ProxyChecker -v ${{ steps.get_version.outputs.VERSION }} -p ./publish/osx-x64/ProxyChecker.app -e ProxyChecker -o ./Releases-x64
+        vpk pack -u ProxyChecker -v ${{ steps.get_version.outputs.VERSION }} -p ./publish/osx-x64/ProxyChecker.app -e ProxyChecker
+        mv Releases Releases-x64
 
     - name: Pack Release (ARM64)
       run: |
-        vpk pack -u ProxyChecker-arm64 -v ${{ steps.get_version.outputs.VERSION }} -p ./publish/osx-arm64/ProxyChecker.app -e ProxyChecker -o ./Releases-arm64
+        vpk pack -u ProxyChecker-arm64 -v ${{ steps.get_version.outputs.VERSION }} -p ./publish/osx-arm64/ProxyChecker.app -e ProxyChecker
+        mv Releases Releases-arm64
 
     - name: Upload macOS Artifacts
       uses: actions/upload-artifact@v4
