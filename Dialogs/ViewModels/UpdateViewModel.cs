@@ -32,13 +32,10 @@ public partial class UpdateViewModel : ObservableObject, IDialogContext
     partial void OnIsReadyToRestartChanged(bool value) =>
         OnPropertyChanged(nameof(ShowLaterButton));
 
-#if !DEBUG
-    public UpdateViewModel()
+    // Design-time constructor
+    public UpdateViewModel() : this(new UpdateService())
     {
-        
     }
-
-#endif
 
     public UpdateViewModel(UpdateService updateService)
     {
@@ -94,7 +91,6 @@ public partial class UpdateViewModel : ObservableObject, IDialogContext
         }
 
         IsDownloading = true;
-        IsAvailable = false;
         CanUpdate = false;
         Title = "正在下载更新...";
 
