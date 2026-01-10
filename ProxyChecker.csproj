@@ -23,15 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Views\MainView.axaml.cs">
-      <DependentUpon>MainView.axaml</DependentUpon>
-    </Compile>
-    <Compile Update="Dialogs\Views\UpdateDialog.axaml.cs">
-      <DependentUpon>UpdateDialog.axaml</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
     <RdXmlFile Include="rd.xml" />
   </ItemGroup>
 </Project>

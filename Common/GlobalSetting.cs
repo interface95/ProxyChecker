@@ -1,9 +1,15 @@
 using System;
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using ProxyChecker.Dialogs.Models;
 
 namespace ProxyChecker.Common;
+
+[JsonSerializable(typeof(SettingModel))]
+public partial class GlobalSettingContext : JsonSerializerContext
+{
+}
 
 public class GlobalSetting
 {
@@ -29,7 +35,7 @@ public class GlobalSetting
             if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
 
-            var json = JsonSerializer.Serialize(Setting, new JsonSerializerOptions { WriteIndented = true });
+            var json = JsonSerializer.Serialize(Setting, GlobalSettingContext.Default.SettingModel);
             File.WriteAllText(SettingPath, json);
         }
         catch
@@ -45,7 +51,7 @@ public class GlobalSetting
             if (File.Exists(SettingPath))
             {
                 var json = File.ReadAllText(SettingPath);
-                Setting = JsonSerializer.Deserialize<SettingModel>(json) ?? new SettingModel();
+                Setting = JsonSerializer.Deserialize(json, GlobalSettingContext.Default.SettingModel) ?? new SettingModel();
             }
         }
         catch
