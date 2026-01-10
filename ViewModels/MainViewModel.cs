@@ -244,8 +244,14 @@ public partial class MainViewModel : ObservableObject
         {
             if (IsRunning)
             {
-                // 正在检测时拖入新文件：提示用户是否替换
-                // 这里先简单停止当前任务再导入新文件
+                var result = await MessageBox.ShowOverlayAsync(
+                    "当前正在进行检测任务，导入新文件将停止当前任务。\n是否继续？",
+                    "提示",
+                    icon: MessageBoxIcon.Warning,
+                    button: MessageBoxButton.YesNo);
+
+                if (result != MessageBoxResult.Yes) return;
+
                 _cts?.Cancel();
                 _pauseEvent.Set();
                 IsRunning = false;
@@ -283,12 +289,19 @@ public partial class MainViewModel : ObservableObject
         ResetRunState();
         var ct = StartRun();
         var service = new ProxyCheckerService(GlobalSetting.Instance.Setting.Timeout);
-        using var semaphore = new SemaphoreSlim(Concurrency);
 
         try
         {
-            var tasks = _proxies.Select(proxy => ProcessProxyAsync(service, semaphore, proxy, ct));
-            await Task.WhenAll(tasks);
+            var parallelOptions = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = Concurrency,
+                CancellationToken = ct
+            };
+
+            await Parallel.ForEachAsync(_proxies, parallelOptions, async (proxy, token) =>
+            {
+                await ProcessProxyAsync(service, proxy, token);
+            });
         }
         catch (OperationCanceledException)
         {
@@ -341,11 +354,9 @@ public partial class MainViewModel : ObservableObject
 
     private async Task ProcessProxyAsync(
         ProxyCheckerService service,
-        SemaphoreSlim semaphore,
         ProxyInfo proxy,
         CancellationToken ct)
     {
-        await semaphore.WaitAsync(ct).ConfigureAwait(false);
         try
         {
             await _pauseEvent.WaitAsync(ct).ConfigureAwait(false);
@@ -359,9 +370,9 @@ public partial class MainViewModel : ObservableObject
                 SaveSingleResult(result);
             }
         }
-        finally
+        catch (OperationCanceledException)
         {
-            semaphore.Release();
+            // Ignore
         }
     }
 

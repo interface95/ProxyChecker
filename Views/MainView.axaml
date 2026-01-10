@@ -11,7 +11,7 @@
              DragDrop.AllowDrop="True">
 
     <Design.DataContext>
-        <vm:MainViewModel/>
+        <vm:MainViewModel />
     </Design.DataContext>
 
     <u:LoadingContainer
@@ -20,7 +20,7 @@
         HorizontalContentAlignment="Stretch"
         VerticalContentAlignment="Stretch">
 
-        <Grid RowDefinitions="Auto,Auto,*"
+        <Grid RowDefinitions="Auto,Auto,*,Auto"
               Margin="{OnPlatform macOS='5,20,5,5', Windows='5,30,5,5'}">
 
             <!-- 1. 顶部控制台 -->
@@ -30,37 +30,66 @@
                         Margin="0,0,0,10">
                 <StackPanel.Styles>
                     <Style Selector="Button">
-                        <Setter Property="Width" Value="100"/>
-                        <Setter Property="Height" Value="35"/>
+                        <Setter Property="Width" Value="100" />
+                        <Setter Property="Height" Value="35" />
                     </Style>
                 </StackPanel.Styles>
 
                 <Button Content="开始"
                         Classes="Success"
                         Command="{Binding StartCommand}"
-                        IsEnabled="{Binding CanStart}"/>
+                        IsEnabled="{Binding CanStart}" />
 
                 <Button Content="{Binding PauseButtonText}"
                         Command="{Binding PauseCommand}"
-                        IsEnabled="{Binding CanPause}"/>
+                        IsEnabled="{Binding CanPause}" />
 
                 <Button Content="停止"
                         Classes="Danger"
                         Command="{Binding StopCommand}"
-                        IsEnabled="{Binding CanStop}"/>
+                        IsEnabled="{Binding CanStop}" />
             </StackPanel>
 
             <!-- 2. 设置区域 (Expander) -->
             <Expander Grid.Row="1" Margin="0,0,0,5" IsExpanded="False">
+                <Expander.Header>
+                    <Grid ColumnDefinitions="Auto, *, Auto" Margin="0,0,10,0">
+                        <!-- 0: 左侧 (文件名 + 进度) -->
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="15" VerticalAlignment="Center"
+                                    IsVisible="{Binding !IsExpanded, RelativeSource={RelativeSource AncestorType=Expander}}">
+                            <TextBlock Text="{Binding LoadedFileName}" FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding ProgressText}" Foreground="{DynamicResource SemiColorText2}" />
+                        </StackPanel>
+
+                        <!-- 1: 中间 (统计 + ISP) -->
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    IsVisible="{Binding !IsExpanded, RelativeSource={RelativeSource AncestorType=Expander}}">
+                            <TextBlock Text="{Binding SuccessCount, StringFormat='成功:{0}'}" Foreground="#10B981" />
+                            <TextBlock Text="{Binding FailedCount, StringFormat='失败:{0}'}" Foreground="#EF4444" />
+                            <TextBlock Text="{Binding UniqueIpCount, StringFormat='独立:{0}'}" Foreground="#3B82F6" />
+                            <TextBlock Text="|" Foreground="{DynamicResource SemiColorBorder}" />
+                            <TextBlock Text="{Binding IspDistribution}" Foreground="{DynamicResource SemiColorText2}" />
+                        </StackPanel>
+
+                        <!-- 2: 右侧 (耗时 + 速度) -->
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center"
+                                    IsVisible="{Binding !IsExpanded, RelativeSource={RelativeSource AncestorType=Expander}}">
+                            <TextBlock Text="{Binding ElapsedTime}" />
+                            <TextBlock Text="{Binding Speed}" />
+                        </StackPanel>
+                    </Grid>
+                </Expander.Header>
+
                 <Grid ColumnDefinitions="Auto,*" Margin="10,8">
                     <!-- 左侧: 线程数 -->
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <TextBlock Text="线程数" VerticalAlignment="Center"/>
+                        <TextBlock Text="线程数" VerticalAlignment="Center" />
                         <u:NumericIntUpDown Width="80"
-                                          Maximum="200"
-                                          Minimum="1"
-                                          HorizontalContentAlignment="Center"
-                                          Value="{Binding Concurrency}"/>
+                                            Maximum="200"
+                                            Minimum="1"
+                                            HorizontalContentAlignment="Center"
+                                            Value="{Binding Concurrency}" />
                     </StackPanel>
 
                     <!-- 右侧: 搜索 + 过滤 -->
@@ -68,16 +97,16 @@
                         <TextBox Text="{Binding SearchText}"
                                  Watermark="搜索 IP / 端口 / 用户名..."
                                  Width="200"
-                                 Classes="ClearButton"/>
+                                 Classes="ClearButton" />
 
                         <ComboBox Width="100"
                                   SelectedItem="{Binding FilterIsp}">
-                             <sys:String>全部</sys:String>
-                             <sys:String>移动</sys:String>
-                             <sys:String>电信</sys:String>
-                             <sys:String>联通</sys:String>
-                             <sys:String>其他</sys:String>
-                             <sys:String>失败</sys:String>
+                            <sys:String>全部</sys:String>
+                            <sys:String>移动</sys:String>
+                            <sys:String>电信</sys:String>
+                            <sys:String>联通</sys:String>
+                            <sys:String>其他</sys:String>
+                            <sys:String>失败</sys:String>
                         </ComboBox>
                     </StackPanel>
                 </Grid>
@@ -105,8 +134,9 @@
                                     <MenuItem Header="复制"
                                               Command="{Binding CopyCommand}">
                                         <MenuItem.Icon>
-                                            <PathIcon Data="M19 21H8V7h11v14zM8 5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H8zm-3 0V3h11v2h-9a2 2 0 0 0-2 2v12H5V5z"
-                                                      Width="14" Height="14"/>
+                                            <PathIcon
+                                                Data="M19 21H8V7h11v14zM8 5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H8zm-3 0V3h11v2h-9a2 2 0 0 0-2 2v12H5V5z"
+                                                Width="14" Height="14" />
                                         </MenuItem.Icon>
                                     </MenuItem>
                                     <MenuItem Header="-" />
@@ -114,78 +144,30 @@
                                               Command="{Binding ExportAllCommand}">
                                         <MenuItem.Icon>
                                             <PathIcon Data="M5 20h14v-2H5v2zm0-10h4v6h6v-6h4l-7-7-7 7z"
-                                                      Width="14" Height="14"/>
+                                                      Width="14" Height="14" />
                                         </MenuItem.Icon>
                                     </MenuItem>
                                     <MenuItem Header="清空结果"
                                               Command="{Binding ClearResultsCommand}">
                                         <MenuItem.Icon>
-                                            <PathIcon Data="M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12Z"
-                                                      Width="14" Height="14"/>
+                                            <PathIcon
+                                                Data="M19 4h-3.5l-1-1h-5l-1 1H5v2h14M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12Z"
+                                                Width="14" Height="14" />
                                         </MenuItem.Icon>
                                     </MenuItem>
                                     <MenuItem Header="清空全部数据"
                                               Command="{Binding ClearAllCommand}">
                                         <MenuItem.Icon>
-                                            <PathIcon Data="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12Z"
-                                                      Width="14" Height="14"
-                                                      Foreground="Red"/>
+                                            <PathIcon
+                                                Data="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12Z"
+                                                Width="14" Height="14"
+                                                Foreground="Red" />
                                         </MenuItem.Icon>
                                     </MenuItem>
                                 </ContextMenu>
                             </TreeDataGrid.ContextMenu>
                         </TreeDataGrid>
 
-                        <!-- 底部状态条 -->
-                        <Border Grid.Row="1"
-                                Background="{DynamicResource SemiColorBackground2}"
-                                BorderBrush="{DynamicResource SemiColorBorder}"
-                                BorderThickness="0,1,0,0"
-                                CornerRadius="0,0,12,12"
-                                ClipToBounds="True">
-                            <Grid>
-                                <!-- 进度条 -->
-                                <ProgressBar VerticalAlignment="Top"
-                                             Height="2"
-                                             Foreground="{DynamicResource SemiColorPrimary}"
-                                             Background="Transparent"
-                                             Value="{Binding ProgressPercent}"
-                                             Minimum="0"
-                                             Maximum="100"
-                                             IsIndeterminate="False"/>
-
-                                <!-- 内容区域 -->
-                                <Grid ColumnDefinitions="Auto,*,Auto" Margin="12,8">
-                                    <Grid.Styles>
-                                        <Style Selector="TextBlock">
-                                            <Setter Property="VerticalAlignment" Value="Center"/>
-                                            <Setter Property="FontSize" Value="13"/>
-                                        </Style>
-                                    </Grid.Styles>
-
-                                    <!-- 左侧: 文件名 + 进度 -->
-                                    <StackPanel Orientation="Horizontal" Spacing="15">
-                                        <TextBlock Text="{Binding LoadedFileName}" FontWeight="SemiBold"/>
-                                        <TextBlock Text="{Binding ProgressText}" Foreground="{DynamicResource SemiColorText2}"/>
-                                    </StackPanel>
-
-                                    <!-- 中间: 统计 + ISP 分布 -->
-                                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center">
-                                        <TextBlock Text="{Binding SuccessCount, StringFormat='成功:{0}'}" Foreground="#10B981"/>
-                                        <TextBlock Text="{Binding FailedCount, StringFormat='失败:{0}'}" Foreground="#EF4444"/>
-                                        <TextBlock Text="{Binding UniqueIpCount, StringFormat='独立IP:{0}'}" Foreground="#3B82F6"/>
-                                        <TextBlock Text="|" Foreground="{DynamicResource SemiColorBorder}"/>
-                                        <TextBlock Text="{Binding IspDistribution}" Foreground="{DynamicResource SemiColorText2}"/>
-                                    </StackPanel>
-
-                                    <!-- 右侧: 耗时 + 速度 -->
-                                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="12">
-                                        <TextBlock Text="{Binding ElapsedTime}"/>
-                                        <TextBlock Text="{Binding Speed}"/>
-                                    </StackPanel>
-                                </Grid>
-                            </Grid>
-                        </Border>
                     </Grid>
                 </Border>
 
@@ -199,7 +181,7 @@
                         <!-- 底层渐变块 -->
                         <Border CornerRadius="12"
                                 Margin="40"
-                                Background="{DynamicResource SemiColorBackground2}"/>
+                                Background="{DynamicResource SemiColorBackground2}" />
 
                         <!-- 左上角装饰块 -->
                         <Border Width="120" Height="80"
@@ -208,7 +190,7 @@
                                 Margin="60,40,0,0"
                                 CornerRadius="16"
                                 Background="{DynamicResource SemiColorPrimary}"
-                                Opacity="0.06"/>
+                                Opacity="0.06" />
 
                         <!-- 右下角装饰块 -->
                         <Border Width="160" Height="100"
@@ -217,7 +199,7 @@
                                 Margin="0,0,60,60"
                                 CornerRadius="20"
                                 Background="{DynamicResource SemiColorBackground3}"
-                                Opacity="0.35"/>
+                                Opacity="0.35" />
 
                         <!-- 中心内容 -->
                         <StackPanel VerticalAlignment="Center"
@@ -232,24 +214,35 @@
                                           Width="56" Height="56"
                                           VerticalAlignment="Center"
                                           HorizontalAlignment="Center"
-                                          Foreground="{DynamicResource SemiColorPrimary}"/>
+                                          Foreground="{DynamicResource SemiColorPrimary}" />
                             </Border>
 
                             <TextBlock Text="拖放文件到此处开始检测"
                                        FontSize="22"
                                        FontWeight="SemiBold"
                                        Foreground="{DynamicResource SemiColorText0}"
-                                       HorizontalAlignment="Center"/>
+                                       HorizontalAlignment="Center" />
 
                             <TextBlock Text="支持 TXT 代理列表，拖入后自动解析并准备检测"
                                        FontSize="13"
                                        Foreground="{DynamicResource SemiColorText2}"
-                                       HorizontalAlignment="Center"/>
+                                       HorizontalAlignment="Center" />
                         </StackPanel>
                     </Grid>
                 </Border>
             </Grid>
 
+            <!-- 4. 底部状态条 (始终显示, Grid.Row="3") -->
+            <ProgressBar VerticalAlignment="Bottom"
+                         Height="1"
+                         Grid.Row="3"
+                         Foreground="{DynamicResource SemiColorPrimary}"
+                         Background="Transparent"
+                         Value="{Binding ProgressPercent}"
+                         Minimum="0"
+                         Maximum="100"
+                         Margin="0,0,0,-5"
+                         IsIndeterminate="False" />
         </Grid>
     </u:LoadingContainer>
 </UserControl>
