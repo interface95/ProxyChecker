@@ -152,11 +152,19 @@ jobs:
       run: |
         vpk pack -u ProxyChecker -v ${{ steps.get_version.outputs.VERSION }} -p ./publish/osx-x64/ProxyChecker.app -e ProxyChecker
         mv Releases Releases-x64
+        cd Releases-x64
+        for f in RELEASES-osx releases.osx.json assets.osx.json; do
+          if [ -f "$f" ]; then mv "$f" "${f%.*}-x64.${f##*.}"; fi
+        done
 
     - name: Pack Release (ARM64)
       run: |
         vpk pack -u ProxyChecker-arm64 -v ${{ steps.get_version.outputs.VERSION }} -p ./publish/osx-arm64/ProxyChecker.app -e ProxyChecker
         mv Releases Releases-arm64
+        cd Releases-arm64
+        for f in RELEASES-osx releases.osx.json assets.osx.json; do
+          if [ -f "$f" ]; then mv "$f" "${f%.*}-arm64.${f##*.}"; fi
+        done
 
     - name: Upload macOS Artifacts
       uses: actions/upload-artifact@v4
