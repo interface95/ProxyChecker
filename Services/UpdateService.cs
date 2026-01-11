@@ -25,16 +25,7 @@ public class UpdateService
     {
         if (_updateManager == null) await InitializeAsync();
 
-        try
-        {
-            _updateInfo = await _updateManager!.CheckForUpdatesAsync();
-            return _updateInfo;
-        }
-        catch (Exception)
-        {
-            // TODO: 添加日志记录
-            return null;
-        }
+        return await _updateManager!.CheckForUpdatesAsync();
     }
 
     public async Task DownloadUpdatesAsync(Action<int> progress, CancellationToken cancellationToken = default)

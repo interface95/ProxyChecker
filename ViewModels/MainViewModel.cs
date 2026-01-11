@@ -228,38 +228,48 @@ public partial class MainViewModel : ObservableObject
     partial void OnFilterIspChanged(string value) => UpdateResultsSource();
     partial void OnResultsChanged(ObservableCollection<CheckResult> value) => UpdateResultsSource();
 
-    // === Commands ===
+/// <summary>
+/// 检查更新
+/// </summary>
+/// <param name="silent">是否静默检查</param>
     [RelayCommand]
     private async Task CheckUpdateAsync(bool silent = false)
     {
-        if (!silent)
+        try
         {
-            var vm = new UpdateViewModel(_updateService);
-            await OverlayDialog.ShowModal<UpdateDialog, UpdateViewModel>(
-                vm,
-                options: new OverlayDialogOptions
-                {
-                    Buttons = DialogButton.None,
-                    Title = "软件更新",
-                    CanLightDismiss = false
-                });
-        }
-        else
-        {
-            var info = await _updateService.CheckForUpdatesAsync();
-            if (info != null)
+            if (!silent)
             {
                 var vm = new UpdateViewModel(_updateService);
                 await OverlayDialog.ShowModal<UpdateDialog, UpdateViewModel>(
-                   vm,
-                   options: new OverlayDialogOptions
-                   {
-                       Buttons = DialogButton.None,
-                       IsCloseButtonVisible = false,
-                       Title = "发现新版本",
-                       CanLightDismiss = false
-                   });
+                    vm,
+                    options: new OverlayDialogOptions
+                    {
+                        Buttons = DialogButton.None,
+                        Title = "软件更新",
+                        CanLightDismiss = false
+                    });
             }
+            else
+            {
+                var info = await _updateService.CheckForUpdatesAsync();
+                if (info != null)
+                {
+                    var vm = new UpdateViewModel(_updateService);
+                    await OverlayDialog.ShowModal<UpdateDialog, UpdateViewModel>(
+                    vm,
+                    options: new OverlayDialogOptions
+                    {
+                        Buttons = DialogButton.None,
+                        IsCloseButtonVisible = false,
+                        Title = "发现新版本",
+                        CanLightDismiss = false
+                    });
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await MessageBox.ShowOverlayAsync($"检查更新失败: {ex.Message}", "错误");
         }
     }
 
@@ -283,35 +293,51 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private async Task OpenSettingsAsync()
     {
-        var options = new DrawerOptions
+        try
         {
-            Buttons = DialogButton.None,
-            Position = Position.Right,
-            CanLightDismiss = true,
-            IsCloseButtonVisible = true,
-            Title = "设置",
-        };
+            var options = new DrawerOptions
+            {
+                Buttons = DialogButton.None,
+                Position = Position.Right,
+                CanLightDismiss = true,
+                IsCloseButtonVisible = true,
+                Title = "设置",
+            };
 
-        await Drawer.ShowModal<SettingDialog, SettingModel>(
-            GlobalSetting.Instance.Setting, null, options);
+            await Drawer.ShowModal<SettingDialog, SettingModel>(
+                GlobalSetting.Instance.Setting, null, options);
+        }
+        catch (Exception ex)
+        {
+            await MessageBox.ShowOverlayAsync($"打开设置失败: {ex.Message}", "错误");
+        }
+
     }
 
     [RelayCommand]
     private async Task LoadFileAsync()
     {
-        if (_storageProvider == null) return;
-
-        var files = await _storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        try
         {
-            Title = "选择代理文件",
-            AllowMultiple = false,
-            FileTypeFilter = [new FilePickerFileType("代理文件") { Patterns = ["*.txt"] }]
-        });
+            if (_storageProvider == null) return;
 
-        if (files.Count == 0) return;
+            var files = await _storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+            {
+                Title = "选择代理文件",
+                AllowMultiple = false,
+                FileTypeFilter = [new FilePickerFileType("代理文件") { Patterns = ["*.txt"] }]
+            });
 
-        var file = files[0];
-        await LoadFileFromPathAsync(file.Path.LocalPath);
+            if (files.Count == 0) return;
+
+            var file = files[0];
+            await LoadFileFromPathAsync(file.Path.LocalPath);
+        }
+        catch (Exception ex)
+        {
+            await MessageBox.ShowOverlayAsync($"打开设置失败: {ex.Message}", "错误");
+        }
+
     }
 
     public async Task LoadFileFromPathAsync(string filePath)

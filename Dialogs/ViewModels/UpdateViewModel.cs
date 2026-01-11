@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.Input;
 using Irihi.Avalonia.Shared.Contracts;
 using ProxyChecker.Dialogs.Models;
 using ProxyChecker.Services;
+using Ursa.Controls;
 using Velopack;
 
 namespace ProxyChecker.Dialogs.ViewModels;
@@ -66,9 +67,10 @@ public partial class UpdateViewModel : ObservableObject, IDialogContext
                 Status = DownloadStatus.Completed;
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             Status = DownloadStatus.Failed;
+            await MessageBox.ShowOverlayAsync($"检查更新失败: {ex.Message}", "错误");
         }
     }
 
@@ -98,7 +100,7 @@ public partial class UpdateViewModel : ObservableObject, IDialogContext
         catch (Exception ex)
         {
             Status = DownloadStatus.Failed;
-            // TODO: 添加日志记录 ex.Message
+            await MessageBox.ShowOverlayAsync($"下载更新失败: {ex.Message}", "错误");
         }
     }
 

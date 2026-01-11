@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ProxyChecker.Dialogs.Views;
 using ProxyChecker.Services;
+using System;
 using System.Threading.Tasks;
 using Ursa.Controls;
 
