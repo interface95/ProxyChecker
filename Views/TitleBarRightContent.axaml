@@ -21,6 +21,7 @@
                       ToolTip.Tip="设置">
         </u:IconButton>
         <u:ThemeToggleButton
+            x:Name="ThemeToggleButton"
             IsThreeState="True"
             Mode="Controller" />
     </StackPanel>

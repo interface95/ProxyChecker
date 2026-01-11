@@ -19,18 +19,26 @@
 
     <!-- 标题栏右侧内容 -->
     <u:UrsaWindow.RightContent>
-        <views:TitleBarRightContent />
+        <views:TitleBarRightContent x:Name="TitleBarRightContent"/>
     </u:UrsaWindow.RightContent>
 
     <!-- 主视图 (页面切换) -->
-    <Carousel SelectedIndex="{Binding PageIndex}">
-        <Carousel.PageTransition>
-            <CrossFade Duration="0:0:0.25"/>
-        </Carousel.PageTransition>
-        <!-- 检测页面 -->
-        <views:MainView />
+    <Grid>
+        <Carousel SelectedIndex="{Binding PageIndex}">
+            <Carousel.PageTransition>
+                <CrossFade Duration="0:0:0.25"/>
+            </Carousel.PageTransition>
+            <!-- 检测页面 -->
+            <views:MainView />
 
-        <!-- 关于页面 -->
-        <views:AboutView />
-    </Carousel>
+            <!-- 关于页面 -->
+            <views:AboutView />
+        </Carousel>
+
+        <!-- 主题切换波纹叠加层 -->
+        <Image x:Name="ThemeOverlay"
+               Stretch="UniformToFill"
+               IsHitTestVisible="False"
+               ZIndex="999"/>
+    </Grid>
 </u:UrsaWindow>
