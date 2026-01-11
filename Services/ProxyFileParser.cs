@@ -6,7 +6,7 @@ using ProxyChecker.Models;
 
 namespace ProxyChecker.Services;
 
-public static class ProxyFileParser
+public static partial class ProxyFileParser
 {
     public static List<ProxyInfo> Parse(string filePath)
     {
@@ -86,7 +86,7 @@ public static class ProxyFileParser
         }
 
         // 备用格式1: 序号→IP,端口,用户名,ASN,运营商
-        var match1 = Regex.Match(line, @"^\s*(\d+)→([^,]+),(\d+),([^,]+)");
+        var match1 = IndexArrowIpPortUserRegex().Match(line);
         if (match1.Success)
         {
             return new ProxyInfo(
@@ -98,7 +98,7 @@ public static class ProxyFileParser
         }
 
         // 备用格式2: IP,端口,用户名,密码
-        var match2 = Regex.Match(line, @"^([^,]+),(\d+),([^,]+),([^,]+)$");
+        var match2 = IpPortUserPassRegex().Match(line);
         if (match2.Success && !match2.Groups[4].Value.StartsWith("AS"))
         {
             return new ProxyInfo(
@@ -111,7 +111,7 @@ public static class ProxyFileParser
         }
 
         // 备用格式3: IP,端口,用户名,ASN,运营商
-        var match3 = Regex.Match(line, @"^([^,]+),(\d+),([^,]+),AS\d+");
+        var match3 = IpPortUserAsnRegex().Match(line);
         if (match3.Success)
         {
             return new ProxyInfo(
@@ -123,7 +123,7 @@ public static class ProxyFileParser
         }
 
         // 备用格式4: IP,端口,用户名
-        var match4 = Regex.Match(line, @"^([^,]+),(\d+),([^,]+)$");
+        var match4 = IpPortUserRegex().Match(line);
         if (match4.Success)
         {
             return new ProxyInfo(
@@ -139,4 +139,15 @@ public static class ProxyFileParser
 
     private static string? GetPart(string[] parts, int index) =>
         index >= 0 && index < parts.Length ? parts[index].Trim() : null;
+    [GeneratedRegex(@"^([^,]+),(\d+),([^,]+),([^,]+)$")]
+    private static partial Regex IpPortUserPassRegex();
+
+    [GeneratedRegex(@"^\s*(\d+)→([^,]+),(\d+),([^,]+)")]
+    private static partial Regex IndexArrowIpPortUserRegex();
+
+    [GeneratedRegex(@"^([^,]+),(\d+),([^,]+),AS\d+")]
+    private static partial Regex IpPortUserAsnRegex();
+
+    [GeneratedRegex(@"^([^,]+),(\d+),([^,]+)$")]
+    private static partial Regex IpPortUserRegex();
 }
