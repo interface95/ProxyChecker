@@ -26,6 +26,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <RdXmlFile Include="rd.xml" />
   </ItemGroup>
 
