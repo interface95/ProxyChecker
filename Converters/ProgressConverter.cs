@@ -8,9 +8,9 @@ public class ProgressConverter
     public static readonly IValueConverter ProgressToOpacityConverter =
         new FuncValueConverter<double, double>(progress =>
         {
-            double MaxOpacity = 1;
-            double MinOpacity = 0.2;
-            double MaxProgress = 100;
+            const double MaxOpacity = 1;
+            const double MinOpacity = 0.2;
+            const double MaxProgress = 100;
             double range = MaxOpacity - MinOpacity;
             double opacity = MinOpacity + progress / MaxProgress * range;
 

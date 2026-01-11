@@ -30,9 +30,9 @@ public class UpdateService
             _updateInfo = await _updateManager!.CheckForUpdatesAsync();
             return _updateInfo;
         }
-        catch
+        catch (Exception)
         {
-            // Log error or ignore
+            // TODO: 添加日志记录
             return null;
         }
     }

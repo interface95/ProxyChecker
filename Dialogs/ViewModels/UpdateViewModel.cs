@@ -23,8 +23,13 @@ public partial class UpdateViewModel : ObservableObject, IDialogContext
     [NotifyCanExecuteChangedFor(nameof(StartCommand), nameof(StopCommand), nameof(RestartCommand))]
     private DownloadStatus _status = DownloadStatus.NotStarted;
 
-    public UpdateViewModel() : this(new UpdateService(), null) { }
+    // Design-time constructor
+    public UpdateViewModel()
+    {
+        _updateService = null!;
+    }
 
+    // Runtime constructor
     public UpdateViewModel(UpdateService updateService, UpdateInfo? updateInfo = null)
     {
         _updateService = updateService;
@@ -33,6 +38,7 @@ public partial class UpdateViewModel : ObservableObject, IDialogContext
         if (_updateInfo != null)
         {
             Statistics.Version = _updateInfo.TargetFullRelease.Version.ToString();
+            // 直接开始下载，UpdateService 已在 AboutViewModel 中初始化
             _ = StartAsync();
         }
         else
@@ -43,19 +49,26 @@ public partial class UpdateViewModel : ObservableObject, IDialogContext
 
     private async Task CheckUpdatesAsync()
     {
-        Status = DownloadStatus.NotStarted;
-        _updateInfo = await _updateService.CheckForUpdatesAsync();
+        try
+        {
+            Status = DownloadStatus.NotStarted;
+            _updateInfo = await _updateService.CheckForUpdatesAsync();
 
-        if (_updateInfo != null)
-        {
-            Statistics.Version = _updateInfo.TargetFullRelease.Version.ToString();
-            // Auto start download if update is found, as we are in the UpdateDialog
-            await StartAsync();
+            if (_updateInfo != null)
+            {
+                Statistics.Version = _updateInfo.TargetFullRelease.Version.ToString();
+                // Auto start download if update is found, as we are in the UpdateDialog
+                await StartAsync();
+            }
+            else
+            {
+                // No update found - dialog will be closed by AboutViewModel
+                Status = DownloadStatus.Completed;
+            }
         }
-        else
+        catch (Exception)
         {
-            // No update found, close dialog
-            Close();
+            Status = DownloadStatus.Failed;
         }
     }
 
@@ -82,9 +95,10 @@ public partial class UpdateViewModel : ObservableObject, IDialogContext
         {
             Status = DownloadStatus.Paused;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             Status = DownloadStatus.Failed;
+            // TODO: 添加日志记录 ex.Message
         }
     }
 

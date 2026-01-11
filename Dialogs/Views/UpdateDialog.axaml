@@ -92,7 +92,7 @@
                             Converter={StaticResource EnumToBooleanConverter},
                             ConverterParameter={x:Static models:DownloadStatus.Failed},
                             Mode=OneWay}"
-                Text="下载失败" Foreground="Red" />
+                Text="下载失败" Foreground="{DynamicResource SemiBrushDanger}" />
         </Panel>
 
         <!-- Controls -->
