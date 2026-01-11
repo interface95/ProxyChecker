@@ -25,7 +25,8 @@ public class UpdateService
     {
         if (_updateManager == null) await InitializeAsync();
 
-        return await _updateManager!.CheckForUpdatesAsync();
+        _updateInfo = await _updateManager!.CheckForUpdatesAsync();
+        return _updateInfo;
     }
 
     public async Task DownloadUpdatesAsync(Action<int> progress, CancellationToken cancellationToken = default)
