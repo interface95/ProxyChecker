@@ -117,6 +117,37 @@ public partial class MainViewModel : ObservableObject
 
         UpdateResultsSource();
 
+        // 启动时自动检查更新
+        _ = CheckUpdateOnStartupAsync();
+    }
+
+    private async Task CheckUpdateOnStartupAsync()
+    {
+        try
+        {
+            // 延迟 2 秒，让主界面先完成加载
+            await Task.Delay(2000);
+
+            if (UpdateViewModel.IsUpdateDialogOpen) return;
+
+            var updateInfo = await _updateService.CheckForUpdatesAsync();
+            if (updateInfo != null)
+            {
+                var vm = new UpdateViewModel(_updateService, updateInfo);
+                await OverlayDialog.ShowModal<UpdateDialog, UpdateViewModel>(
+                    vm,
+                    options: new OverlayDialogOptions
+                    {
+                        Buttons = DialogButton.None,
+                        Title = "软件更新",
+                        CanLightDismiss = false
+                    });
+            }
+        }
+        catch
+        {
+            // 静默失败，不打扰用户
+        }
     }
 
     partial void OnConcurrencyChanged(int value)
