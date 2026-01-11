@@ -11,6 +11,7 @@ public class UpdateService
     private const string RepoUrl = "https://github.com/interface95/ProxyChecker";
     private UpdateManager? _updateManager;
     private UpdateInfo? _updateInfo;
+    private Task<UpdateInfo?>? _checkUpdateTask;
 
     public bool IsSupported => true;
 
@@ -21,7 +22,18 @@ public class UpdateService
         _updateManager = new UpdateManager(source);
     }
 
-    public async Task<UpdateInfo?> CheckForUpdatesAsync()
+    public Task<UpdateInfo?> CheckForUpdatesAsync()
+    {
+        if (_checkUpdateTask != null && !_checkUpdateTask.IsCompleted)
+        {
+            return _checkUpdateTask;
+        }
+
+        _checkUpdateTask = CheckForUpdatesInternalAsync();
+        return _checkUpdateTask;
+    }
+
+    private async Task<UpdateInfo?> CheckForUpdatesInternalAsync()
     {
         if (_updateManager == null) await InitializeAsync();
 

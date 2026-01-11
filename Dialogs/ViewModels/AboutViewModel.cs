@@ -24,6 +24,8 @@ public partial class AboutViewModel(UpdateService updateService) : ObservableObj
     [RelayCommand]
     private async Task OnCheckUpdateAsync()
     {
+        if (UpdateViewModel.IsUpdateDialogOpen) return;
+
         IsCheckingUpdate = true;
         try
         {

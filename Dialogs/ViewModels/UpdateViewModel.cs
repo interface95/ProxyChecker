@@ -14,6 +14,8 @@ namespace ProxyChecker.Dialogs.ViewModels;
 
 public partial class UpdateViewModel : ObservableObject, IDialogContext
 {
+    public static bool IsUpdateDialogOpen { get; set; }
+
     private readonly UpdateService _updateService;
     private UpdateInfo? _updateInfo;
     private CancellationTokenSource? _cts;
@@ -23,6 +25,8 @@ public partial class UpdateViewModel : ObservableObject, IDialogContext
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(StartCommand), nameof(StopCommand), nameof(RestartCommand))]
     private DownloadStatus _status = DownloadStatus.NotStarted;
+
+    [ObservableProperty] private string? _releaseNotes;
 
     // Design-time constructor
     public UpdateViewModel()
@@ -39,8 +43,7 @@ public partial class UpdateViewModel : ObservableObject, IDialogContext
         if (_updateInfo != null)
         {
             Statistics.Version = _updateInfo.TargetFullRelease.Version.ToString();
-            // 直接开始下载，UpdateService 已在 AboutViewModel 中初始化
-            _ = StartAsync();
+            ReleaseNotes = _updateInfo.TargetFullRelease.NotesMarkdown;
         }
         else
         {
@@ -58,8 +61,7 @@ public partial class UpdateViewModel : ObservableObject, IDialogContext
             if (_updateInfo != null)
             {
                 Statistics.Version = _updateInfo.TargetFullRelease.Version.ToString();
-                // Auto start download if update is found, as we are in the UpdateDialog
-                await StartAsync();
+                ReleaseNotes = _updateInfo.TargetFullRelease.NotesMarkdown;
             }
             else
             {
