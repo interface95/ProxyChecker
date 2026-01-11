@@ -117,8 +117,6 @@ public partial class MainViewModel : ObservableObject
 
         UpdateResultsSource();
 
-        // Auto-check on startup
-        _ = CheckUpdateAsync(true);
     }
 
     partial void OnConcurrencyChanged(int value)
@@ -227,54 +225,6 @@ public partial class MainViewModel : ObservableObject
     partial void OnSearchTextChanged(string value) => UpdateResultsSource();
     partial void OnFilterIspChanged(string value) => UpdateResultsSource();
     partial void OnResultsChanged(ObservableCollection<CheckResult> value) => UpdateResultsSource();
-
-/// <summary>
-/// 检查更新
-/// </summary>
-/// <param name="silent">是否静默检查</param>
-    [RelayCommand]
-    private async Task CheckUpdateAsync(bool silent = false)
-    {
-        try
-        {
-            if (!silent)
-            {
-                var vm = new UpdateViewModel(_updateService);
-                await OverlayDialog.ShowModal<UpdateDialog, UpdateViewModel>(
-                    vm,
-                    options: new OverlayDialogOptions
-                    {
-                        Buttons = DialogButton.None,
-                        Title = "软件更新",
-                        CanLightDismiss = false
-                    });
-            }
-            else
-            {
-                var info = await _updateService.CheckForUpdatesAsync();
-                if (info != null)
-                {
-                    var vm = new UpdateViewModel(_updateService);
-                    await OverlayDialog.ShowModal<UpdateDialog, UpdateViewModel>(
-                    vm,
-                    options: new OverlayDialogOptions
-                    {
-                        Buttons = DialogButton.None,
-                        IsCloseButtonVisible = false,
-                        Title = "发现新版本",
-                        CanLightDismiss = false
-                    });
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            await MessageBox.ShowOverlayAsync($"检查更新失败: {ex.Message}", "错误");
-        }
-    }
-
-    [RelayCommand]
-    private Task CheckUpdateManualAsync() => CheckUpdateAsync(false);
 
     [RelayCommand]
     private void ShowAbout()

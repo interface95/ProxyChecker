@@ -70,7 +70,7 @@ public partial class UpdateViewModel : ObservableObject, IDialogContext
         catch (Exception ex)
         {
             Status = DownloadStatus.Failed;
-            await MessageBox.ShowOverlayAsync($"检查更新失败: {ex.Message}", "错误");
+            await MessageBox.ShowOverlayAsync($"检查更新失败: {ex.Message}", "错误", icon: MessageBoxIcon.Error);
         }
     }
 
@@ -100,7 +100,7 @@ public partial class UpdateViewModel : ObservableObject, IDialogContext
         catch (Exception ex)
         {
             Status = DownloadStatus.Failed;
-            await MessageBox.ShowOverlayAsync($"下载更新失败: {ex.Message}", "错误");
+            await MessageBox.ShowOverlayAsync($"下载更新失败: {ex.Message}", "错误", icon: MessageBoxIcon.Error);
         }
     }
 
