@@ -48,7 +48,8 @@ public partial class AboutViewModel(UpdateService updateService) : ObservableObj
         }
         catch (Exception ex)
         {
-            await MessageBox.ShowOverlayAsync($"检查更新失败: {ex.Message}", "错误");
+            var message = ex.InnerException?.Message ?? ex.Message;
+            await MessageBox.ShowOverlayAsync($"检查更新失败: {message}", "错误");
         }
         finally
         {
