@@ -95,6 +95,12 @@
                                     Value="{Binding PasswordIndex}"
                                     u:FormItem.Label="密码位置"
                                     ToolTip.Tip="密码在分隔后的索引位置 (从0开始)" />
+
+                <TextBox Text="{Binding RecursiveSeparator}"
+                         Width="100"
+                         HorizontalAlignment="Left"
+                         u:FormItem.Label="递归分隔符"
+                         ToolTip.Tip="当字段内包含完整代理信息时，用于内部分隔的字符 (为空则自动检测)" />
             </u:Form>
 
             <u:Divider Content="格式示例" Margin="0,10,0,0" />

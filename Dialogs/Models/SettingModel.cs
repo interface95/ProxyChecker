@@ -13,6 +13,7 @@ public partial class SettingModel : ObservableObject, IDialogContext
     [ObservableProperty] private int _portIndex = 1;
     [ObservableProperty] private int _usernameIndex = 2;
     [ObservableProperty] private int _passwordIndex = 3;
+    [ObservableProperty] private string _recursiveSeparator = ",";
 
     // 代理设置
     [ObservableProperty] private int _proxyType; // 0=HTTP, 1=SOCKS4, 2=SOCKS5
