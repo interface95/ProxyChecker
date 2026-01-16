@@ -155,7 +155,7 @@ public partial class MainWindow : UrsaWindow
             return true;
         }
 
-        var result = await MessageBox.ShowOverlayAsync("您确定要退出吗？", "退出提示", button: MessageBoxButton.YesNo);
+        var result = await MessageBox.ShowOverlayAsync("您确定要退出吗？", "退出提示", button: MessageBoxButton.YesNo, icon: MessageBoxIcon.Warning);
         return result == MessageBoxResult.Yes;
     }
 }

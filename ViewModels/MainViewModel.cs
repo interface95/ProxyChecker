@@ -290,7 +290,7 @@ public partial class MainViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            await MessageBox.ShowOverlayAsync($"打开设置失败: {ex.Message}", "错误");
+            await MessageBox.ShowOverlayAsync($"打开设置失败: {ex.Message}", "错误", icon: MessageBoxIcon.Error);
         }
 
     }
@@ -316,7 +316,7 @@ public partial class MainViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            await MessageBox.ShowOverlayAsync($"打开设置失败: {ex.Message}", "错误");
+            await MessageBox.ShowOverlayAsync($"打开设置失败: {ex.Message}", "错误", icon: MessageBoxIcon.Error);
         }
 
     }

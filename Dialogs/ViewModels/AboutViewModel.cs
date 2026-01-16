@@ -11,7 +11,8 @@ namespace ProxyChecker.Dialogs.ViewModels;
 public partial class AboutViewModel(UpdateService updateService) : ObservableObject
 {
     [ObservableProperty] private string _appVersion = VersionInfo.GetDisplayVersion();
-    [ObservableProperty] private string _description =
+    [ObservableProperty]
+    private string _description =
         "ProxyChecker 是一个高性能的代理检测工具，支持多协议检测、地理位置识别及并发验证。\n\n基于 Avalonia UI 与 Native AOT 技术构建，旨在提供跨平台、极致流畅的用户体验。";
     [ObservableProperty] private bool _isCheckingUpdate;
 
@@ -45,13 +46,13 @@ public partial class AboutViewModel(UpdateService updateService) : ObservableObj
             }
             else
             {
-                await MessageBox.ShowOverlayAsync("当前已是最新版本。", "检查更新");
+                await MessageBox.ShowOverlayAsync("当前已是最新版本。", "检查更新", icon: MessageBoxIcon.Information);
             }
         }
         catch (Exception ex)
         {
             var message = ex.InnerException?.Message ?? ex.Message;
-            await MessageBox.ShowOverlayAsync($"检查更新失败: {message}", "错误");
+            await MessageBox.ShowOverlayAsync($"检查更新失败: {message}", "错误", icon: MessageBoxIcon.Error);
         }
         finally
         {
