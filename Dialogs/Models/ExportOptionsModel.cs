@@ -2,6 +2,9 @@ using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Irihi.Avalonia.Shared.Contracts;
 
+using Ursa.Common;
+using Ursa.Controls;
+
 namespace ProxyChecker.Dialogs.Models;
 
 public partial class ExportOptionsModel : ObservableObject, IDialogContext
@@ -14,6 +17,8 @@ public partial class ExportOptionsModel : ObservableObject, IDialogContext
     [ObservableProperty] private bool _includeLocation = false;
     [ObservableProperty] private bool _includeIsp = false;
     [ObservableProperty] private bool _includeResponseTime = false;
+    [ObservableProperty] private bool _includeOriginalLine = false;
+    [ObservableProperty] private string _separator = ",";
     [ObservableProperty] private bool _onlySuccess = true;
 
     public void Close()
@@ -23,8 +28,8 @@ public partial class ExportOptionsModel : ObservableObject, IDialogContext
 
     public event EventHandler<object?>? RequestClose;
 
-    public void Confirm() => RequestClose?.Invoke(this, true);
-    public void Cancel() => RequestClose?.Invoke(this, false);
+    public void Confirm() => RequestClose?.Invoke(this, DialogResult.OK);
+    public void Cancel() => RequestClose?.Invoke(this, DialogResult.Cancel);
 
     // 全选所有字段
     public void SelectAll()
@@ -37,6 +42,7 @@ public partial class ExportOptionsModel : ObservableObject, IDialogContext
         IncludeLocation = true;
         IncludeIsp = true;
         IncludeResponseTime = true;
+        IncludeOriginalLine = true;
     }
 
     // 取消全选
@@ -50,5 +56,6 @@ public partial class ExportOptionsModel : ObservableObject, IDialogContext
         IncludeLocation = false;
         IncludeIsp = false;
         IncludeResponseTime = false;
+        IncludeOriginalLine = false;
     }
 }

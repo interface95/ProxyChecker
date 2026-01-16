@@ -575,6 +575,11 @@ public partial class MainViewModel : ObservableObject
         {
             var parts = new List<string>();
 
+            if (optionsModel.IncludeOriginalLine && !string.IsNullOrEmpty(r.Proxy.OriginalLine))
+            {
+                parts.Add(r.Proxy.OriginalLine);
+            }
+
             if (optionsModel.IncludeIp) parts.Add(r.Proxy.Ip);
             if (optionsModel.IncludePort) parts.Add(r.Proxy.Port.ToString());
             if (optionsModel.IncludeUsername) parts.Add(r.Proxy.Username ?? "");
@@ -584,7 +589,7 @@ public partial class MainViewModel : ObservableObject
             if (optionsModel.IncludeIsp) parts.Add(r.Isp ?? "");
             if (optionsModel.IncludeResponseTime) parts.Add(r.ResponseTimeDisplay);
 
-            return string.Join(",", parts);
+            return string.Join(optionsModel.Separator, parts);
         }).ToList();
 
         if (lines.Count == 0) return;
@@ -751,8 +756,9 @@ public partial class MainViewModel : ObservableObject
         var selection = ResultsSource.Selection as ITreeDataGridRowSelectionModel<CheckResult>;
         if (selection == null || selection.SelectedItems.Count == 0) return;
 
-        var text = string.Join(Environment.NewLine, selection.SelectedItems.Select(r =>
-            string.IsNullOrEmpty(r.Proxy.Username)
+        var text = string.Join(Environment.NewLine, selection.SelectedItems
+            .Where(r => r != null)
+            .Select(r => string.IsNullOrEmpty(r!.Proxy.Username)
                 ? $"{r.Proxy.Ip}:{r.Proxy.Port}"
                 : $"{r.Proxy.Ip}:{r.Proxy.Port}:{r.Proxy.Username}:{r.Proxy.Password}"));
 

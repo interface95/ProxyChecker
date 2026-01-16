@@ -122,7 +122,8 @@ public static partial class ProxyFileParser
                                     Ip: subIp,
                                     Port: subPort,
                                     Username: subUser ?? "",
-                                    Password: subPass ?? ""
+                                    Password: subPass ?? "",
+                                    OriginalLine: line
                                 );
                             }
                         }
@@ -161,7 +162,8 @@ public static partial class ProxyFileParser
                     Ip: ip,
                     Port: port,
                     Username: username ?? "",
-                    Password: password ?? ""
+                    Password: password ?? "",
+                    OriginalLine: line
                 );
             }
         }
@@ -184,7 +186,8 @@ public static partial class ProxyFileParser
                 Index: int.Parse(match1.Groups[1].Value),
                 Ip: match1.Groups[2].Value,
                 Port: int.Parse(match1.Groups[3].Value),
-                Username: match1.Groups[4].Value
+                Username: match1.Groups[4].Value,
+                OriginalLine: line
             );
         }
 
@@ -197,7 +200,8 @@ public static partial class ProxyFileParser
                 Ip: match2.Groups[1].Value,
                 Port: int.Parse(match2.Groups[2].Value),
                 Username: match2.Groups[3].Value,
-                Password: match2.Groups[4].Value
+                Password: match2.Groups[4].Value,
+                OriginalLine: line
             );
         }
 
@@ -209,7 +213,8 @@ public static partial class ProxyFileParser
                 Index: defaultIndex,
                 Ip: match3.Groups[1].Value,
                 Port: int.Parse(match3.Groups[2].Value),
-                Username: match3.Groups[3].Value
+                Username: match3.Groups[3].Value,
+                OriginalLine: line
             );
         }
 
@@ -221,7 +226,8 @@ public static partial class ProxyFileParser
                 Index: defaultIndex,
                 Ip: match4.Groups[1].Value,
                 Port: int.Parse(match4.Groups[2].Value),
-                Username: match4.Groups[3].Value
+                Username: match4.Groups[3].Value,
+                OriginalLine: line
             );
         }
 

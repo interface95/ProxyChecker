@@ -5,7 +5,8 @@ public record ProxyInfo(
     string Ip,
     int Port,
     string Username,
-    string Password = ""
+    string Password = "",
+    string OriginalLine = ""
 )
 {
     public string Address => $"{Ip}:{Port}";

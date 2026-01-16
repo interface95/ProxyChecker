@@ -30,11 +30,12 @@
                         CornerRadius="6" Padding="12" Margin="0,0,0,8">
                     <StackPanel Spacing="8">
                         <TextBlock Text="代理信息" Foreground="{DynamicResource SemiColorText2}" FontWeight="Bold"/>
-                        <UniformGrid Columns="2" Rows="2">
+                        <UniformGrid Columns="2">
                             <CheckBox Content="IP" IsChecked="{Binding IncludeIp}" Margin="0,4"/>
                             <CheckBox Content="端口" IsChecked="{Binding IncludePort}" Margin="0,4"/>
                             <CheckBox Content="用户名" IsChecked="{Binding IncludeUsername}" Margin="0,4"/>
                             <CheckBox Content="密码" IsChecked="{Binding IncludePassword}" Margin="0,4"/>
+                            <CheckBox Content="原始行" IsChecked="{Binding IncludeOriginalLine}" Margin="0,4"/>
                         </UniformGrid>
                     </StackPanel>
                 </Border>
@@ -57,16 +58,21 @@
             
             <u:Divider Margin="0,4"/>
 
-            <Grid ColumnDefinitions="Auto,*" Margin="0,4">
+            <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,4">
                  <CheckBox Grid.Column="0" Content="仅导出成功的代理" IsChecked="{Binding OnlySuccess}" 
                            FontWeight="Bold"
                            VerticalAlignment="Center"/>
                 
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" HorizontalAlignment="Right">
-                    <Button Content="取消" Command="{Binding Cancel}" Classes="Tertiary" Width="80"/>
-                    <Button Content="确定" Command="{Binding Confirm}" Classes="Primary" Theme="{DynamicResource SolidButton}" Width="80"/>
+                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="分隔符" VerticalAlignment="Center"/>
+                    <TextBox Text="{Binding Separator}" Width="60" TextAlignment="Center"/>
                 </StackPanel>
             </Grid>
+
+            <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Right" Margin="0,8,0,0">
+                <Button Content="取消" Command="{Binding Cancel}" Classes="Tertiary" Width="80"/>
+                <Button Content="确定" Command="{Binding Confirm}" Classes="Primary" Theme="{DynamicResource SolidButton}" Width="80"/>
+            </StackPanel>
         </StackPanel>
     </Border>
 </UserControl>
