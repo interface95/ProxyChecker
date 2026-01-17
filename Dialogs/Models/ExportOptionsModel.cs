@@ -19,6 +19,7 @@ public partial class ExportOptionsModel : ObservableObject, IDialogContext
     [ObservableProperty] private bool _includeResponseTime = false;
     [ObservableProperty] private bool _includeOriginalLine = false;
     [ObservableProperty] private string _separator = ",";
+    [ObservableProperty] private bool _sortByLocation = false;
     [ObservableProperty] private bool _onlySuccess = true;
 
     public void Close()

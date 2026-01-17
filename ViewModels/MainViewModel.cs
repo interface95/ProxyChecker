@@ -568,7 +568,12 @@ public partial class MainViewModel : ObservableObject
             return;
 
         // 过滤数据
-        var query = optionsModel.OnlySuccess ? Results.Where(r => r.Success) : Results;
+        var query = optionsModel.OnlySuccess ? Results.Where(r => r.Success) : Results.AsEnumerable();
+
+        if (optionsModel.SortByLocation)
+        {
+            query = query.OrderBy(r => r.Location ?? string.Empty);
+        }
 
         // 生成导出内容
         var lines = query.Select(r =>
