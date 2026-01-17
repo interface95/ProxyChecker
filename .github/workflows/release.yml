@@ -258,6 +258,46 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
 
     steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Generate Changelog
+      id: changelog
+      uses: mikepenz/release-changelog-builder-action@v4
+      with:
+        configuration: |
+          {
+            "categories": [
+              {
+                "title": "## 🚀 新功能",
+                "labels": ["feature", "feat"]
+              },
+              {
+                "title": "## 🐛 Bug 修复",
+                "labels": ["fix", "bug"]
+              },
+              {
+                "title": "## 🔧 其他改进",
+                "labels": []
+              }
+            ],
+            "template": "#{{CHANGELOG}}\n\n---\n**Full Changelog**: #{{RELEASE_DIFF}}",
+            "pr_template": "- #{{TITLE}} (#{{NUMBER}})",
+            "empty_template": "本次更新包含以下提交：\n\n#{{UNCATEGORIZED}}",
+            "transformers": [],
+            "max_tags_to_fetch": 200,
+            "max_pull_requests": 200,
+            "max_back_track_time_days": 365,
+            "exclude_merge_branches": [],
+            "tag_resolver": {
+              "method": "semver"
+            },
+            "base_branches": ["main", "master"]
+          }
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Download Windows Artifacts
       uses: actions/download-artifact@v4
       with:
@@ -286,6 +326,7 @@ jobs:
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
+        body: ${{ steps.changelog.outputs.changelog }}
         files: |
           windows-releases/*
           macos-releases/**/*
@@ -293,6 +334,6 @@ jobs:
           linux-arm64-releases/**/*
         draft: false
         prerelease: false
-        generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
