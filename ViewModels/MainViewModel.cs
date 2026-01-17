@@ -144,9 +144,12 @@ public partial class MainViewModel : ObservableObject
                     });
             }
         }
-        catch
+        catch (Exception ex)
         {
-            // 静默失败，不打扰用户
+            await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(async () =>
+            {
+                await MessageBox.ShowOverlayAsync($"检查更新失败: {ex.Message}", "错误", icon: MessageBoxIcon.Error);
+            });
         }
     }
 

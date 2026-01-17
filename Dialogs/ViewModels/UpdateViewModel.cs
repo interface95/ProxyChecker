@@ -43,9 +43,8 @@ public partial class UpdateViewModel : ObservableObject, IDialogContext
         if (_updateInfo != null)
         {
             Statistics.Version = _updateInfo.TargetFullRelease.Version.ToString();
-            ReleaseNotes = !string.IsNullOrWhiteSpace(_updateInfo.TargetFullRelease.NotesMarkdown)
-                ? _updateInfo.TargetFullRelease.NotesMarkdown
-                : "暂无更新日志";
+            var notes = _updateInfo.TargetFullRelease.NotesMarkdown;
+            ReleaseNotes = !string.IsNullOrWhiteSpace(notes) ? notes : "暂无更新日志";
         }
         else
         {
