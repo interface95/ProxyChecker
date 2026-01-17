@@ -19,6 +19,7 @@ public partial class SettingModel : ObservableObject, IDialogContext
     [ObservableProperty] private int _proxyType; // 0=HTTP, 1=SOCKS4, 2=SOCKS5
     [ObservableProperty] private int _timeout = 10; // 默认10秒
     [ObservableProperty] private int _concurrency = 50; // 默认50线程
+    [ObservableProperty] private int _retryCount = 5; // 默认重试1次
     [ObservableProperty] private bool _autoSave = true; // 默认自动保存
 
     public void Close()

@@ -371,7 +371,7 @@ public partial class MainViewModel : ObservableObject
 
         ResetRunState();
         var ct = StartRun();
-        var service = new ProxyCheckerService(GlobalSetting.Instance.Setting.Timeout);
+        var service = new ProxyCheckerService(GlobalSetting.Instance.Setting.Timeout, GlobalSetting.Instance.Setting.RetryCount);
 
         try
         {

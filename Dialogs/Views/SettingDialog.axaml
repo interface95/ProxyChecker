@@ -46,6 +46,15 @@
                                     u:FormItem.Label="连接超时(秒)"
                                     ToolTip.Tip="代理连接超时时间" />
 
+                <u:NumericIntUpDown Width="100"
+                                    Minimum="0"
+                                    Maximum="10"
+                                    HorizontalAlignment="Left"
+                                    HorizontalContentAlignment="Center"
+                                    Value="{Binding RetryCount}"
+                                    u:FormItem.Label="重试次数"
+                                    ToolTip.Tip="连接失败后的重试次数" />
+
                 <CheckBox IsChecked="{Binding AutoSave}"
                           u:FormItem.Label="自动保存"
                           ToolTip.Tip="检测完成后自动保存结果到文件" />
